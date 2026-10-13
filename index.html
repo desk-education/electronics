@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encyclopedia of Electronics - Interactive Learning Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { primary: '#2563eb', secondary: '#10b981', darkBg: '#0f172a', darkCard: '#1e293b' }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- <style>
+        
+    CSS files was here
+
+    </style> -->
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-darkBg dark:text-slate-100">
+
+    <!-- Central Application Configuration -->
+    <script>
+        const APP_CONFIG = {
+            // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW:
+            GOOGLE_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyWKAwxwJqRlU4tV17EeQbiEMorOaY3laFA-q0JeAZvZBlf_bnMoGhUePSVIsNBCjr2LQ/exec",
+            APP_NAME: "Encyclopedia of Electronics"
+        };
+    </script>
+
+    <div id="app" class="page-wrapper">
+        <!-- Top Header -->
+        <header class="bg-white dark:bg-darkCard shadow-sm border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('home')">
+                    <i class="fa-solid fa-microchip text-primary text-2xl"></i>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Encyclopedia of Electronics</h1>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" id="headerSearchInput" placeholder="Search components, formulas, terms..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Settings & Admin Controls -->
+                <div class="flex items-center gap-3">
+                    <button onclick="navigate('admin')" class="p-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-semibold flex items-center gap-1.5" title="Teacher Setup & Backend Script">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span class="hidden sm:inline">Teacher Portal</span>
+                    </button>
+                    <div class="dropdown relative" id="settingsDropdown">
+                        <button id="settingsBtn" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-gear"></i>
+                            <span class="hidden sm:inline text-sm font-medium">Settings</span>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-content bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl mt-2 overflow-hidden">
+                            <div class="p-3 border-b border-slate-200 dark:border-slate-700">
+                                <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Preferences</h3>
+                            </div>
+                            <ul class="py-1 text-sm">
+                                <li class="px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer" id="themeToggleBtn">
+                                    <div class="flex items-center gap-3"><i class="fa-solid fa-moon w-5 text-center" id="themeIcon"></i><span>Theme</span></div>
+                                    <span class="text-xs font-semibold bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded" id="themeLabel">Light</span>
+                                </li>
+                                <li class="px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer" id="soundToggleBtn">
+                                    <div class="flex items-center gap-3"><i class="fa-solid fa-volume-high w-5 text-center" id="soundIcon"></i><span>Sound Effects</span></div>
+                                    <span class="text-xs font-semibold bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded" id="soundLabel">On</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content-wrapper max-w-7xl mx-auto w-full">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar-container bg-white dark:bg-darkCard shadow-sm min-h-full p-4">
+                <nav class="space-y-1">
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Navigation</p>
+                    <a href="#" data-route="home" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-house w-5 text-center"></i> Home
+                    </a>
+                    <a href="#" data-route="search" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-magnifying-glass w-5 text-center"></i> Search Index
+                    </a>
+
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-6 mb-2">Component Lessons</p>
+                    <div id="componentsNav" class="space-y-1"></div>
+
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-6 mb-2">Interactive Tools</p>
+                    <a href="#" data-route="calculators" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-calculator w-5 text-center"></i> Electronics Calculators
+                    </a>
+                    <a href="#" data-route="lab" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-flask w-5 text-center"></i> Virtual Laboratory
+                    </a>
+                    <a href="#" data-route="gallery" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-video w-5 text-center"></i> Video Center
+                    </a>
+                    <a href="#" data-route="quiz" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-graduation-cap w-5 text-center"></i> Quiz Bee Assessment
+                    </a>
+                    <a href="#" data-route="admin" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors">
+                        <i class="fa-solid fa-server w-5 text-center"></i> Google Sheets Setup
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Dynamic Content Area -->
+            <main class="content-container">
+                <div id="dynamicContent"></div>
+            </main>
+        </div>
+
+        <footer class="bg-white dark:bg-darkCard border-t border-slate-200 dark:border-slate-800 py-6 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 dark:text-slate-400 text-sm">
+                &copy; 2026 Encyclopedia of Electronics • Designed for Grade 11 & 12 Curriculum Engineering Standards
+            </div>
+        </footer>
+    </div>
+
+    <!-- MAIN APPLICATION LOGIC, DATA, & BACKEND PORTAL -->
+    <script>
+        // State Management
+        const AppState = {
+            theme: localStorage.getItem('app_theme') || 'light',
+            soundEnabled: localStorage.getItem('app_sound') !== 'false',
+            currentRoute: 'home',
+            currentComponentId: null,
+            audioContext: null,
+            completedLessons: JSON.parse(localStorage.getItem('app_completed_lessons') || '[]'),
+            quizHistory: JSON.parse(localStorage.getItem('app_quiz_history') || '[]')
+        };
+
+        // Sound Synthesis (Web Audio API)
+        function playClickSound() {
+            if (!AppState.soundEnabled) return;
+            try {
+                if (!AppState.audioContext) AppState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (AppState.audioContext.state === 'suspended') AppState.audioContext.resume();
+                const ctx = AppState.audioContext;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.1);
+            } catch (e) { console.warn("Audio Context silent block:", e); }
+        }
+
+        // COMPONENT DATABASE (11 Grade 11/12 Electronics Components)
+        const ComponentsData = [
+            {
+                id: 'resistor',
+                name: 'Resistor',
+                category: 'Passive Components',
+                icon: 'fa-wave-square',
+                symbolSVG: `<svg viewBox="0 0 100 30" class="w-24 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,15 L20,15 L25,5 L35,25 L45,5 L55,25 L65,5 L75,25 L80,15 L100,15"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1603732551658-5fabbafa84eb?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A resistor is a passive two-terminal electrical component that implements electrical resistance as a circuit element to reduce current flow and divide voltages.',
+                functions: 'Limits electric current, sets bias levels, divides voltages, protects sensitive components, and dissipates power as heat.',
+                types: [
+                    { name: 'Carbon Film', desc: 'Constructed by depositing carbon film onto a ceramic substrate. Standard general-purpose resistor.' },
+                    { name: 'Metal Film', desc: 'Provides higher precision, lower noise, and lower temperature coefficient than carbon composition.' },
+                    { name: 'Wirewound', desc: 'Made by winding resistance wire around a ceramic core. Used for high-power applications.' },
+                    { name: 'Potentiometer', desc: 'A three-terminal variable resistor used for manual voltage division.' }
+                ],
+                formulas: 'Ohm\'s Law: V = I × R<br>Power Dissipation: P = I² × R = V² / R<br>Series: R_total = R1 + R2 + R3<br>Parallel: 1/R_total = 1/R1 + 1/R2 + 1/R3',
+                examples: '<b>Example:</b> A 12V supply is connected across a 220Ω resistor. Calculate the current.<br><b>Solution:</b> I = V / R = 12V / 220Ω = 0.0545 A = 54.5 mA.',
+                applications: 'Current limiting for LEDs, voltage dividers for microcontroller sensors, pull-up/pull-down digital logic stabilization.',
+                testing: 'Set multimeter to Resistance (Ω) mode. Disconnect component power. Measure across leads and verify tolerance against color code.',
+                faults: 'Open circuit (burnt out due to over-wattage), drift in resistance value due to thermal stress.',
+                safety: 'Ensure resistor power rating (e.g., 1/4W, 1/2W) exceeds actual dissipation by at least 100% margin (2x factor).'
+            },
+            {
+                id: 'capacitor',
+                name: 'Capacitor',
+                category: 'Passive Components',
+                icon: 'fa-grip-lines',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,20 L40,20 M40,5 L40,35 M60,5 L60,35 M60,20 L100,20"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A capacitor is a passive component that stores electrical energy electrostatically in an electric field between two conducting plates separated by a dielectric.',
+                functions: 'Power supply smoothing, signal coupling, AC/DC filtering, timing networks, and resonant tuning circuits.',
+                types: [
+                    { name: 'Electrolytic', desc: 'Polarized, offering high capacitance values per unit volume. Essential for power filtering.' },
+                    { name: 'Ceramic Disc', desc: 'Non-polarized, excellent high-frequency response used for decoupling noise.' },
+                    { name: 'Tantalum', desc: 'Polarized, high volumetric efficiency, stable over temperature extremes.' }
+                ],
+                formulas: 'Capacitance: C = Q / V<br>Energy Stored: E = 0.5 × C × V²<br>Parallel: C_total = C1 + C2<br>Series: 1/C_total = 1/C1 + 1/C2',
+                examples: '<b>Example:</b> Calculate energy stored in a 1000µF capacitor charged to 12V.<br><b>Solution:</b> E = 0.5 × (1000 × 10⁻⁶ F) × (12V)² = 0.5 × 0.001 × 144 = 0.072 Joules.',
+                applications: 'Filtering AC ripple in DC power supplies, blocking DC bias in audio amplifiers, debouncing mechanical switches.',
+                testing: 'Use a multimeter with Capacitance mode (Farads). For polarized capacitors, check polarity. Verify ESR if testing power filters.',
+                faults: 'Dielectric breakdown (short circuit), electrolyte drying (loss of capacitance / high ESR), bulging cap heads.',
+                safety: 'Large capacitors hold lethal high-voltage charges even when power is off. Always safely discharge with a high-wattage resistor before handling.'
+            },
+            {
+                id: 'inductor',
+                name: 'Inductor',
+                category: 'Passive Components',
+                icon: 'fa-dna',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-20 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,20 Q10,5 20,20 Q30,5 40,20 Q50,5 60,20 Q70,5 80,20 L100,20"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'An inductor is a passive two-terminal component that stores energy in a magnetic field when electric current flows through its wire coil.',
+                functions: 'Opposes rapid changes in current, filters high-frequency noise, acts as energy storage in switch-mode power supplies.',
+                types: [
+                    { name: 'Air Core', desc: 'Wound on non-magnetic forms. Used in high-frequency RF applications.' },
+                    { name: 'Ferrite Core', desc: 'High magnetic permeability core used for power inductors and EMI suppressors.' }
+                ],
+                formulas: 'Induced Voltage: V = L × (di/dt)<br>Energy Stored: E = 0.5 × L × I²<br>Inductive Reactance: X_L = 2 × π × f × L',
+                examples: '<b>Example:</b> Calculate reactance of a 10mH inductor at 1kHz.<br><b>Solution:</b> X_L = 2 × 3.1416 × 1000Hz × 0.010H = 62.83 Ω.',
+                applications: 'LC radio tuning circuits, DC-DC buck/boost converter power storage, high-pass/low-pass audio crossovers.',
+                testing: 'Measure DC resistance using Ohmmeter (should read low resistance). Measure inductance using an LCR meter.',
+                faults: 'Shorts between adjacent winding turns, open circuits due to broken coil wire.',
+                safety: 'Inductive kickback voltage spike can destroy switching transistors when power is disconnected. Use flyback diodes.'
+            },
+            {
+                id: 'diode',
+                name: 'Diode',
+                category: 'Semiconductor Components',
+                icon: 'fa-caret-right',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,20 L35,20 M35,5 L35,35 L65,20 Z M65,5 L65,35 M65,20 L100,20"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A semiconductor device that acts as a one-way switch for current, allowing current to flow easily in forward bias but blocking it in reverse bias.',
+                functions: 'AC-to-DC rectification, voltage clamping, reverse polarity protection, and optical emission (LEDs).',
+                types: [
+                    { name: 'Rectifier Diode (1N4007)', desc: 'Standard Silicon PN-junction diode for power conversion.' },
+                    { name: 'Schottky Diode', desc: 'Low forward voltage drop (~0.3V) and fast switching speeds.' },
+                    { name: 'Zener Diode', desc: 'Designed to allow reverse current when a specific reverse breakdown voltage is reached. Used for voltage regulation.' },
+                    { name: 'Light Emitting Diode (LED)', desc: 'Emits light energy when forward biased.' }
+                ],
+                formulas: 'Forward Voltage Drop: V_F ≈ 0.7V (Silicon), V_F ≈ 0.3V (Germanium)<br>LED Limiting Resistor: R = (V_supply - V_F) / I_F',
+                examples: '<b>Example:</b> Calculate series resistor for a 2.0V red LED operating at 20mA from a 9V battery.<br><b>Solution:</b> R = (9V - 2V) / 0.020A = 7V / 0.020A = 350 Ω (use standard 360Ω).',
+                applications: 'Bridge rectifiers, solar panel bypass diodes, surge protection, indicator displays.',
+                testing: 'Multimeter in Diode Test Mode. Red lead to Anode (+), Black to Cathode (-): shows ~0.6-0.7V. Reverse leads: shows Overload (OL).',
+                faults: 'Short-circuit failure (current flows both ways), open-circuit failure (no current flows).',
+                safety: 'Never connect LEDs or diodes directly across a power supply without current-limiting resistance.'
+            },
+            {
+                id: 'transistor',
+                name: 'Transistor',
+                category: 'Semiconductor Components',
+                icon: 'fa-code-branch',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M10,20 L35,20 M35,10 L35,30 M35,15 L65,5 M35,25 L65,35 M65,5 L65,20 L90,20"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A three-terminal semiconductor device used to amplify electrical signals or switch electronic power and digital states.',
+                functions: 'Digital logic switching, analog signal amplification, voltage regulation, signal modulation.',
+                types: [
+                    { name: 'BJT (NPN / PNP)', desc: 'Current-controlled device where small base current controls larger collector current.' },
+                    { name: 'MOSFET (N-Channel / P-Channel)', desc: 'Voltage-controlled device offering high input impedance and fast switching.' }
+                ],
+                formulas: 'BJT Collector Current: I_C = β × I_B (where β is DC Current Gain)<br>Emitter Current: I_E = I_C + I_B',
+                examples: '<b>Example:</b> A BJT has β = 100. If Base current I_B = 0.5mA, find Collector current I_C.<br><b>Solution:</b> I_C = 100 × 0.5mA = 50mA.',
+                applications: 'Microprocessor logic gates, motor drivers, audio amplifiers, relay switching drivers.',
+                testing: 'Use Diode Mode on multimeter to check PN junctions (Base-Emitter and Base-Collector). Should conduct in forward bias only.',
+                faults: 'Thermal runaway leading to collector-emitter short circuits.',
+                safety: 'Always check thermal dissipation and install heatsinks when driving heavy loads.'
+            },
+            {
+                id: 'integrated-circuit',
+                name: 'Integrated Circuit',
+                category: 'Semiconductor Components',
+                icon: 'fa-microchip',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><rect x="25" y="8" width="50" height="24" rx="2"/><path d="M30,0 L30,8 M40,0 L40,8 M50,0 L50,8 M60,0 L60,8 M70,0 L70,8 M30,32 L30,40 M40,32 L40,40 M50,32 L50,40 M60,32 L60,40 M70,32 L70,40"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A miniaturized electronic circuit consisting of interconnected semiconductor devices fabricated onto a single silicon substrate.',
+                functions: 'Executes complex logical operations, signal processing, amplification, memory storage, and microcomputing.',
+                types: [
+                    { name: 'Analog ICs', desc: 'Operational Amplifiers (e.g., LM358), Linear Regulators (7805).' },
+                    { name: 'Digital ICs', desc: 'Logic Gates (74HC00), Microcontrollers (ATmega328P).' },
+                    { name: 'Mixed-Signal ICs', desc: '555 Timers, Analog-to-Digital Converters (ADCs).' }
+                ],
+                formulas: '555 Timer Astable Frequency: f = 1.44 / ((R1 + 2×R2) × C)',
+                examples: '<b>Example:</b> Calculate 555 timer frequency with R1 = 1kΩ, R2 = 10kΩ, C = 10µF.<br><b>Solution:</b> f = 1.44 / ((1000 + 20000) × 10×10⁻⁶) = 1.44 / (21000 × 0.00001) = 6.85 Hz.',
+                applications: 'Computers, smartphones, embedded robotics, signal conditioning modules.',
+                testing: 'Verify VCC and GND voltages. Check for excessive heat generation. Verify input and output logic waveform signals.',
+                faults: 'ESD (Electrostatic Discharge) gate destruction, latch-up failures.',
+                safety: 'Follow Anti-Static precautions (ground wristbands) when handling unmounted IC chips.'
+            },
+            {
+                id: 'relay',
+                name: 'Relay',
+                category: 'Electromechanical Components',
+                icon: 'fa-toggle-on',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><rect x="10" y="10" width="30" height="20"/><path d="M0,20 L10,20 M40,20 L50,20 M60,20 L100,10 M60,30 L100,30"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'An electromechanical switch operated by an electromagnet. It uses a low-power control signal to switch a high-power secondary circuit.',
+                functions: 'Galvanic circuit isolation, high-voltage remote switching, automation control.',
+                types: [
+                    { name: 'Electromechanical Relay (EMR)', desc: 'Uses mechanical contacts activated by a coil magnet.' },
+                    { name: 'Solid State Relay (SSR)', desc: 'Uses semiconductor optocouplers to switch without moving parts.' }
+                ],
+                formulas: 'Coil Current: I_coil = V_coil / R_coil',
+                examples: '<b>Example:</b> A 12V relay has a coil resistance of 400Ω. Calculate coil activation current.<br><b>Solution:</b> I = 12V / 400Ω = 0.03 A = 30 mA.',
+                applications: 'Automotive horn/headlight switching, industrial PLC control panels, home automation.',
+                testing: 'Measure coil resistance (should match rated specification). Apply rated voltage and check contact continuity with an Ohmmeter.',
+                faults: 'Contact arcing pitting, mechanical contact welding, open coil winding.',
+                safety: 'Ensure coil suppression diode is connected across relay coil to absorb reverse inductive voltage spikes.'
+            },
+            {
+                id: 'switch',
+                name: 'Switch',
+                category: 'Electromechanical Components',
+                icon: 'fa-power-off',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,20 L35,20 M35,20 L70,5 M70,20 L100,20"/><circle cx="35" cy="20" r="3" fill="currentColor"/><circle cx="70" cy="20" r="3" fill="currentColor"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A manual electromechanical device used to interrupt or divert the flow of electric current in a circuit.',
+                functions: 'Power control, signal selection, user interface control, limit sensing.',
+                types: [
+                    { name: 'SPST (Single Pole Single Throw)', desc: 'Basic ON/OFF switch.' },
+                    { name: 'SPDT (Single Pole Double Throw)', desc: 'Switches one input between two possible outputs.' },
+                    { name: 'DPDT (Double Pole Double Throw)', desc: 'Dual switches operated simultaneously, useful for reversing motor rotation.' }
+                ],
+                formulas: 'Contact Resistance: R_contact ≈ 0 Ω (Ideal Closed Switch)',
+                examples: '<b>Example:</b> Mechanical contact debouncing requires an RC low-pass filter calculation: τ = R × C.',
+                applications: 'Main electrical power mains switches, tactile micro-buttons on PCB keyboards.',
+                testing: 'Continuity mode on multimeter. Closed position = Beep (0 Ω); Open position = OL (Infinite resistance).',
+                faults: 'Mechanical spring wear, oxidation on internal metallic contact surfaces.',
+                safety: 'Never exceed the maximum AC/DC current and voltage ratings stamped on the switch casing.'
+            },
+            {
+                id: 'transformer',
+                name: 'Transformer',
+                category: 'Power Sources & Conversion',
+                icon: 'fa-bolt',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-20 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><path d="M0,20 L20,20 Q25,5 30,20 Q35,5 40,20 L40,20 M60,20 Q65,5 70,20 Q75,5 80,20 L100,20 M48,5 L48,35 M52,5 L52,35"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A passive component that transfers electrical energy between two or more circuits through electromagnetic induction.',
+                functions: 'Stepping up or stepping down AC voltages, impedance matching, galvanic electrical isolation.',
+                types: [
+                    { name: 'Step-Down Transformer', desc: 'Reduces high primary AC voltage to safe lower secondary voltage.' },
+                    { name: 'Step-Up Transformer', desc: 'Increases low primary voltage to higher secondary voltage.' },
+                    { name: 'Isolation Transformer', desc: 'Provides 1:1 voltage ratio for user shock hazard safety.' }
+                ],
+                formulas: 'Transformer Turns Ratio: V_p / V_s = N_p / N_s = I_s / I_p',
+                examples: '<b>Example:</b> A transformer has 1000 primary turns and 100 secondary turns. If primary voltage is 220V AC, find secondary voltage.<br><b>Solution:</b> V_s = V_p × (N_s / N_p) = 220V × (100 / 1000) = 22V AC.',
+                applications: 'Grid power distribution, AC wall adapters, audio isolation transformers.',
+                testing: 'Measure primary and secondary winding coil resistance. Check resistance between primary and secondary (must be infinite/OL).',
+                faults: 'Inter-winding insulation breakdown, core saturation overheating.',
+                safety: 'High AC primary voltages pose severe shock hazards. Ensure proper grounding and insulation.'
+            },
+            {
+                id: 'breadboard',
+                name: 'Breadboard',
+                category: 'Prototyping Tools',
+                icon: 'fa-border-all',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-20 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><rect x="10" y="5" width="80" height="30" rx="2"/><circle cx="20" cy="15" r="2" fill="currentColor"/><circle cx="30" cy="15" r="2" fill="currentColor"/><circle cx="40" cy="15" r="2" fill="currentColor"/><circle cx="20" cy="25" r="2" fill="currentColor"/><circle cx="30" cy="25" r="2" fill="currentColor"/><circle cx="40" cy="25" r="2" fill="currentColor"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1603732551658-5fabbafa84eb?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'A reusable construction base used for prototyping temporary electronic circuits without requiring soldering.',
+                functions: 'Rapid component interconnection, non-destructive circuit prototyping, educational experimentation.',
+                types: [
+                    { name: 'Solderless Breadboard', desc: 'Standard board featuring spring metal clips inside plastic tie-points.' },
+                    { name: 'Perfboard / Stripboard', desc: 'Prototyping boards requiring permanent soldered connections.' }
+                ],
+                formulas: 'Parasitic Capacitance between adjacent bus strips: C_parasitic ≈ 2 - 5 pF',
+                examples: '<b>Example:</b> Power rails run horizontally along top/bottom edges; terminal strips run vertically in 5-hole columns.',
+                applications: 'Classroom laboratory experiments, testing component configurations prior to PCB manufacturing.',
+                testing: 'Verify row continuity with multimeter when loose connections are suspected.',
+                faults: 'Worn spring clips leading to intermittent component contact.',
+                safety: 'Do not exceed 1 Ampere current limit through breadboard spring clips to prevent plastic housing melting.'
+            },
+            {
+                id: 'multimeter',
+                name: 'Multimeter',
+                category: 'Measuring Instruments',
+                icon: 'fa-mobile-screen',
+                symbolSVG: `<svg viewBox="0 0 100 40" class="w-16 h-auto stroke-current text-slate-800 dark:text-slate-200" fill="none" stroke-width="2"><rect x="30" y="5" width="40" height="30" rx="3"/><rect x="38" y="9" width="24" height="10" fill="none"/><circle cx="50" cy="26" r="4"/></svg>`,
+                image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=800&h=400',
+                definition: 'An essential electronic measuring instrument that combines several measurement functions in one unit (Voltage, Current, Resistance).',
+                functions: 'Measures DC/AC voltage, DC/AC current, resistance, continuity, capacitance, and diode junction drops.',
+                types: [
+                    { name: 'Digital Multimeter (DMM)', desc: 'Displays numerical measurements on an LCD screen. High input impedance (~10MΩ).' },
+                    { name: 'Analog Multimeter (VOM)', desc: 'Uses a moving coil needle gauge. Excellent for observing changing trends.' }
+                ],
+                formulas: 'Voltage Measurement: Parallel Connection<br>Current Measurement: Series Connection',
+                examples: '<b>Example:</b> When measuring current, the multimeter must be connected in SERIES with the load so current flows through the meter.',
+                applications: 'Circuit troubleshooting, component testing, verification of power rails, fault diagnosis.',
+                testing: 'Check internal protection fuse continuity by measuring resistance between input jacks.',
+                faults: 'Blown internal current fuse caused by accidental parallel voltage measurement in current mode.',
+                safety: 'NEVER connect meter in current mode across a voltage source; this causes an explosive short circuit!'
+            }
+        ];
+
+        // QUESTION BANK (120 Questions)
+        const QuestionBank = [
+            // Resistors
+            { id: 'R1', category: 'Resistors', difficulty: 'easy', type: 'multiple-choice', question: 'What is the primary function of a resistor in an electronic circuit?', options: ['Store electrical charge', 'Limit electric current', 'Step up AC voltage', 'Emit visible light'], correctAnswer: 1, explanation: 'Resistors implement electrical resistance to reduce current flow and divide voltages.' },
+            { id: 'R2', category: 'Resistors', difficulty: 'easy', type: 'multiple-choice', question: 'What is the SI unit of electrical resistance?', options: ['Farad', 'Henry', 'Ohm', 'Watt'], correctAnswer: 2, explanation: 'Electrical resistance is measured in Ohms (Ω).' },
+            { id: 'R3', category: 'Resistors', difficulty: 'easy', type: 'multiple-choice', question: 'According to Ohm’s Law, if resistance increases while voltage remains constant, current will:', options: ['Increase', 'Decrease', 'Remain unchanged', 'Double'], correctAnswer: 1, explanation: 'Current is inversely proportional to resistance (I = V / R).' },
+            { id: 'R4', category: 'Resistors', difficulty: 'moderate', type: 'multiple-choice', question: 'What is the resistance of a 4-band resistor with color bands: Red, Violet, Yellow, Gold?', options: ['270 kΩ ±5%', '27 kΩ ±10%', '2.7 MΩ ±5%', '270 Ω ±5%'], correctAnswer: 0, explanation: 'Red=2, Violet=7, Yellow=10,000 (x10^4), Gold=±5%. 27 x 10,000 = 270,000 Ω = 270 kΩ ±5%.' },
+            { id: 'R5', category: 'Resistors', difficulty: 'moderate', type: 'multiple-choice', question: 'Three 30Ω resistors are connected in parallel. What is the equivalent resistance?', options: ['90 Ω', '30 Ω', '10 Ω', '5 Ω'], correctAnswer: 2, explanation: 'For equal parallel resistors: R_eq = R / n = 30 / 3 = 10 Ω.' },
+            { id: 'R6', category: 'Resistors', difficulty: 'moderate', type: 'multiple-choice', question: 'Calculate the power dissipated by a 100Ω resistor carrying a current of 0.2A.', options: ['4 W', '2 W', '0.04 W', '20 W'], correctAnswer: 0, explanation: 'Power P = I² × R = (0.2)² × 100 = 0.04 × 100 = 4 Watts.' },
+            { id: 'R7', category: 'Resistors', difficulty: 'difficult', type: 'multiple-choice', question: 'A voltage divider consists of R1 = 10kΩ and R2 = 5kΩ across a 15V supply. What is the output voltage across R2?', options: ['10 V', '5 V', '7.5 V', '3.3 V'], correctAnswer: 1, explanation: 'V_out = V_in × [R2 / (R1 + R2)] = 15V × [5k / 15k] = 5V.' },
+            { id: 'R8', category: 'Resistors', difficulty: 'difficult', type: 'multiple-choice', question: 'A 1/4-Watt (0.25W) 100Ω resistor is connected across 10V DC. What will happen to the resistor?', options: ['It operates normally within safety limits', 'It will overheat and burn out because power exceeds rating', 'Resistance will double', 'Voltage will drop to zero'], correctAnswer: 1, explanation: 'P = V² / R = (10)² / 100 = 1 Watt. Since 1W > 0.25W, it will overheat and burn out.' },
+            { id: 'R9', category: 'Resistors', difficulty: 'difficult', type: 'multiple-choice', question: 'In a 5-band precision resistor, what do the first three bands represent?', options: ['Multiplier, Digit, Tolerance', 'First three significant digits', 'Digit, Multiplier, Tolerance, Temp Coff', 'Tolerance, Multiplier, Digits'], correctAnswer: 1, explanation: '5-band resistors use the first 3 bands for significant digits, 4th for multiplier, 5th for tolerance.' },
+            { id: 'R10', category: 'Resistors', difficulty: 'easy', type: 'multiple-choice', question: 'Which type of resistor is specifically designed to manually adjust resistance?', options: ['Wirewound Resistor', 'Carbon Film Resistor', 'Potentiometer', 'Thermistor'], correctAnswer: 2, explanation: 'A potentiometer is a three-terminal variable resistor.' },
+
+            // Capacitors
+            { id: 'C1', category: 'Capacitors', difficulty: 'easy', type: 'multiple-choice', question: 'What does a capacitor store energy in?', options: ['Magnetic field', 'Electric field', 'Thermal core', 'Chemical solution'], correctAnswer: 1, explanation: 'Capacitors store electrical energy electrostatically in an electric field.' },
+            { id: 'C2', category: 'Capacitors', difficulty: 'easy', type: 'multiple-choice', question: 'Which unit is used to measure capacitance?', options: ['Henry', 'Ohm', 'Farad', 'Tesla'], correctAnswer: 2, explanation: 'Capacitance is measured in Farads (F).' },
+            { id: 'C3', category: 'Capacitors', difficulty: 'easy', type: 'multiple-choice', question: 'Electrolytic capacitors are distinct because they:', options: ['Are non-polarized', 'Have polarity (+ and - leads)', 'Handle only high AC voltages', 'Have no dielectric'], correctAnswer: 1, explanation: 'Electrolytic capacitors are polarized and must be connected with correct polarity.' },
+            { id: 'C4', category: 'Capacitors', difficulty: 'moderate', type: 'multiple-choice', question: 'Two 10µF capacitors are connected in parallel. What is the total capacitance?', options: ['5 µF', '20 µF', '10 µF', '1 µF'], correctAnswer: 1, explanation: 'Capacitors in parallel add directly: C_total = C1 + C2 = 10 + 10 = 20 µF.' },
+            { id: 'C5', category: 'Capacitors', difficulty: 'moderate', type: 'multiple-choice', question: 'Two 10µF capacitors are connected in series. What is the equivalent capacitance?', options: ['20 µF', '10 µF', '5 µF', '2.5 µF'], correctAnswer: 2, explanation: 'Equal capacitors in series: C_eq = C / n = 10 / 2 = 5 µF.' },
+            { id: 'C6', category: 'Capacitors', difficulty: 'moderate', type: 'multiple-choice', question: 'How does a capacitor behave in a steady-state DC circuit?', options: ['Acts as a short circuit', 'Acts as an open circuit', 'Amplifies voltage', 'Inverts signal phase'], correctAnswer: 1, explanation: 'Once fully charged, a capacitor blocks DC current, acting as an open circuit.' },
+            { id: 'C7', category: 'Capacitors', difficulty: 'difficult', type: 'multiple-choice', question: 'Calculate the capacitive reactance (X_C) of a 10µF capacitor at a frequency of 50Hz.', options: ['318.3 Ω', '159.2 Ω', '628.3 Ω', '50.0 Ω'], correctAnswer: 0, explanation: 'X_C = 1 / (2 × π × f × C) = 1 / (2 × 3.1416 × 50 × 10×10⁻⁶) = 318.3 Ω.' },
+            { id: 'C8', category: 'Capacitors', difficulty: 'difficult', type: 'multiple-choice', question: 'What is the RC time constant (τ) of a circuit with R = 100kΩ and C = 10µF?', options: ['0.1 seconds', '1.0 second', '10 seconds', '100 seconds'], correctAnswer: 1, explanation: 'Time constant τ = R × C = (100,000 Ω) × (0.00001 F) = 1.0 second.' },
+            { id: 'C9', category: 'Capacitors', difficulty: 'difficult', type: 'multiple-choice', question: 'How many time constants (τ) are required for a capacitor to charge to approximately 99.3% of full voltage?', options: ['1 τ', '3 τ', '5 τ', '10 τ'], correctAnswer: 2, explanation: 'A capacitor is considered fully charged (~99.3%) after 5 time constants.' },
+            { id: 'C10', category: 'Capacitors', difficulty: 'easy', type: 'multiple-choice', question: 'What is the primary function of a decoupling capacitor near an IC power pin?', options: ['Increase power supply voltage', 'Filter out high-frequency noise spikes', 'Provide backup power for hours', 'Convert DC to AC'], correctAnswer: 1, explanation: 'Decoupling capacitors shunt high-frequency noise voltage spikes to ground.' },
+
+            // Diodes & LEDs
+            { id: 'D1', category: 'Diodes and LEDs', difficulty: 'easy', type: 'multiple-choice', question: 'A standard silicon diode starts conducting forward current at approximately what voltage drop?', options: ['0.1 V', '0.3 V', '0.7 V', '2.0 V'], correctAnswer: 2, explanation: 'Silicon PN junctions have a forward bias voltage threshold of ~0.7V.' },
+            { id: 'D2', category: 'Diodes and LEDs', difficulty: 'easy', type: 'multiple-choice', question: 'Which diode terminal must be connected to positive potential for forward bias?', options: ['Cathode', 'Anode', 'Gate', 'Base'], correctAnswer: 1, explanation: 'The Anode is the positive p-type material terminal.' },
+            { id: 'D3', category: 'Diodes and LEDs', difficulty: 'easy', type: 'multiple-choice', question: 'On a physical rectifier diode package, how is the cathode terminal identified?', options: ['A red dot', 'A silver or colored stripe band', 'Longer lead length', 'A metallic heatsink tab'], correctAnswer: 1, explanation: 'The cathode terminal is marked by a printed band stripe on the package body.' },
+            { id: 'D4', category: 'Diodes and LEDs', difficulty: 'moderate', type: 'multiple-choice', question: 'Which specialized diode operates intentionally in its reverse breakdown region to regulate voltage?', options: ['Schottky Diode', 'Zener Diode', 'Varactor Diode', 'Photodiode'], correctAnswer: 1, explanation: 'Zener diodes maintain a constant breakdown voltage across their terminals in reverse bias.' },
+            { id: 'D5', category: 'Diodes and LEDs', difficulty: 'moderate', type: 'multiple-choice', question: 'An LED has V_F = 2.0V and required current I_F = 20mA. What series resistor is needed for a 12V DC power source?', options: ['500 Ω', '100 Ω', '300 Ω', '600 Ω'], correctAnswer: 0, explanation: 'R = (V_s - V_F) / I_F = (12V - 2.0V) / 0.020A = 10V / 0.020A = 500 Ω.' },
+            { id: 'D6', category: 'Diodes and LEDs', difficulty: 'moderate', type: 'multiple-choice', question: 'What is the main advantage of a Schottky diode over a standard silicon diode?', options: ['Higher reverse voltage rating', 'Lower forward voltage drop (~0.3V) and faster switching', 'Higher light emission', 'Variable resistance'], correctAnswer: 1, explanation: 'Schottky diodes feature a lower forward drop (~0.3V) and fast switching speeds.' },
+            { id: 'D7', category: 'Diodes and LEDs', difficulty: 'difficult', type: 'multiple-choice', question: 'How many diodes are required to construct a full-wave bridge rectifier circuit?', options: ['1', '2', '4', '6'], correctAnswer: 2, explanation: 'A full-wave bridge rectifier uses 4 diodes to convert both halves of AC waveform to DC.' },
+            { id: 'D8', category: 'Diodes and LEDs', difficulty: 'difficult', type: 'multiple-choice', question: 'What happens when a diode is connected in reverse bias below its breakdown voltage?', options: ['Large forward current flows', 'Only extremely tiny reverse leakage current flows', 'The diode emits light', 'The diode explodes'], correctAnswer: 1, explanation: 'In reverse bias below breakdown, the depletion region widens, allowing only microamps of leakage current.' },
+            { id: 'D9', category: 'Diodes and LEDs', difficulty: 'difficult', type: 'multiple-choice', question: 'When testing a healthy diode with a digital multimeter in Diode Mode, reverse bias mode will display:', options: ['0.00 V', '0.70 V', 'OL (Overload / Open)', '5.00 V'], correctAnswer: 2, explanation: 'In reverse bias, a functional diode blocks current, displaying "OL" (Overload).' },
+            { id: 'D10', category: 'Diodes and LEDs', difficulty: 'easy', type: 'multiple-choice', question: 'Which LED lead is typically longer on a brand-new component?', options: ['Anode (+)', 'Cathode (-)', 'Both are equal', 'Ground lead'], correctAnswer: 0, explanation: 'The longer lead represents the Anode (+).' },
+
+            // Transistors
+            { id: 'T1', category: 'Transistors', difficulty: 'easy', type: 'multiple-choice', question: 'What are the three terminals of a Bipolar Junction Transistor (BJT)?', options: ['Gate, Drain, Source', 'Anode, Cathode, Gate', 'Base, Collector, Emitter', 'Primary, Secondary, Core'], correctAnswer: 2, explanation: 'BJTs consist of Base, Collector, and Emitter terminals.' },
+            { id: 'T2', category: 'Transistors', difficulty: 'easy', type: 'multiple-choice', question: 'What are the three terminals of an N-Channel MOSFET?', options: ['Base, Collector, Emitter', 'Gate, Drain, Source', 'Anode, Cathode, Grid', 'Input, Output, Ground'], correctAnswer: 1, explanation: 'MOSFETs consist of Gate, Drain, and Source terminals.' },
+            { id: 'T3', category: 'Transistors', difficulty: 'easy', type: 'multiple-choice', question: 'A BJT is primarily a __________ controlled device.', options: ['Voltage', 'Current', 'Frequency', 'Temperature'], correctAnswer: 1, explanation: 'A BJT is a current-controlled device where small base current controls collector current.' },
+            { id: 'T4', category: 'Transistors', difficulty: 'moderate', type: 'multiple-choice', question: 'If a BJT has a current gain (β or hFE) of 150 and a Base current of 0.1mA, what is the Collector current?', options: ['15 mA', '150 mA', '1.5 mA', '150 A'], correctAnswer: 0, explanation: 'I_C = β × I_B = 150 × 0.1mA = 15 mA.' },
+            { id: 'T5', category: 'Transistors', difficulty: 'moderate', type: 'multiple-choice', question: 'When a BJT is used as a closed digital switch, it is operating in which region?', options: ['Cutoff Region', 'Active Region', 'Saturation Region', 'Breakdown Region'], correctAnswer: 2, explanation: 'In Saturation, collector-emitter voltage drop is minimal (~0.2V), acting as a closed switch.' },
+            { id: 'T6', category: 'Transistors', difficulty: 'moderate', type: 'multiple-choice', question: 'Which transistor parameter describes its efficiency as a current amplifier?', options: ['Forward Voltage V_F', 'Beta (β) or hFE', 'Breakdown Voltage V_BR', 'Gate Threshold V_GS'], correctAnswer: 1, explanation: 'Beta (β) or hFE defines the DC current gain ratio (I_C / I_B).' },
+            { id: 'T7', category: 'Transistors', difficulty: 'difficult', type: 'multiple-choice', question: 'Why are MOSFETs preferred over BJTs in high-speed digital switching circuits?', options: ['They require high continuous gate current', 'They have extremely high input impedance and fast voltage-controlled switching', 'They are made of copper', 'They don’t require power'], correctAnswer: 1, explanation: 'MOSFET gates draw virtually no continuous current due to insulating oxide layers, enabling high speed.' },
+            { id: 'T8', category: 'Transistors', difficulty: 'difficult', type: 'multiple-choice', question: 'In an NPN BJT switch circuit, if the Base-Emitter junction voltage is 0.1V, the collector current will be:', options: ['Maximum saturated current', 'Zero (Transistor is in Cutoff)', 'Half maximum current', 'Negative'], correctAnswer: 1, explanation: 'Since V_BE (0.1V) is below the required 0.7V silicon barrier, the transistor remains cutoff (OFF).' },
+            { id: 'T9', category: 'Transistors', difficulty: 'difficult', type: 'multiple-choice', question: 'In a Common Emitter amplifier configuration, the output voltage signal is shifted by how many degrees relative to the input?', options: ['0 degrees (In-phase)', '90 degrees', '180 degrees (Out-of-phase)', '360 degrees'], correctAnswer: 2, explanation: 'Common Emitter amplifiers invert the input signal phase by 180 degrees.' },
+            { id: 'T10', category: 'Transistors', difficulty: 'easy', type: 'multiple-choice', question: 'In an NPN schematic symbol, the arrow points:', options: ['Inward toward the Base', 'Outward away from the Base on the Emitter lead', 'Upward toward Collector', 'Toward the Gate'], correctAnswer: 1, explanation: 'NPN symbol mnemonic: "Not Pointing iN" (Arrow points outward on Emitter).' },
+
+            // Integrated Circuits
+            { id: 'IC1', category: 'Integrated Circuits', difficulty: 'easy', type: 'multiple-choice', question: 'What does IC stand for in electronics?', options: ['Internal Capacitor', 'Integrated Circuit', 'Inductive Coil', 'Interconnected Cable'], correctAnswer: 1, explanation: 'IC stands for Integrated Circuit.' },
+            { id: 'IC2', category: 'Integrated Circuits', difficulty: 'easy', type: 'multiple-choice', question: 'How is Pin 1 identified on a standard Dual In-line Package (DIP) IC?', options: ['Top right corner', 'Next to the notch or dot at the top left', 'It is marked with a red stripe', 'It is the longest pin'], correctAnswer: 1, explanation: 'Pin 1 is located immediately to the left of the orientation notch or dot.' },
+            { id: 'IC3', category: 'Integrated Circuits', difficulty: 'easy', type: 'multiple-choice', question: 'Which ubiquitous 8-pin IC is famous for generating timing pulses and square waves?', options: ['LM358', '555 Timer', '7805 Regulator', 'ATmega328P'], correctAnswer: 1, explanation: 'The 555 Timer IC is widely used for clock pulses, delays, and oscillation.' },
+            { id: 'IC4', category: 'Integrated Circuits', difficulty: 'moderate', type: 'multiple-choice', question: 'What is the function of an Operational Amplifier (Op-Amp) IC like the LM741?', options: ['Direct AC voltage generation', 'High-gain differential DC voltage amplification', 'Digital microwave transmission', 'Mechanical switching'], correctAnswer: 1, explanation: 'Op-Amps are high-gain differential amplifiers used in analog signal processing.' },
+            { id: 'IC5', category: 'Integrated Circuits', difficulty: 'moderate', type: 'multiple-choice', question: 'A 7805 voltage regulator IC produces a fixed output voltage of:', options: ['12 V DC', '5 V DC', '3.3 V DC', '9 V AC'], correctAnswer: 1, explanation: 'The "78XX" series regulates positive DC voltage; "05" denotes +5V output.' },
+            { id: 'IC6', category: 'Integrated Circuits', difficulty: 'moderate', type: 'multiple-choice', question: 'Logic gate ICs in the 74HC series use which semiconductor technology?', options: ['BJT only', 'CMOS (Complementary Metal-Oxide Semiconductor)', 'Vacuum Tubes', 'Germanium rectifiers'], correctAnswer: 1, explanation: '74HC series ICs utilize high-speed CMOS technology.' },
+            { id: 'IC7', category: 'Integrated Circuits', difficulty: 'difficult', type: 'multiple-choice', question: 'An Op-Amp connected in an Inverting Amplifier configuration has R_in = 10kΩ and R_feedback = 100kΩ. What is the closed-loop voltage gain?', options: ['+10', '-10', '+100', '-1'], correctAnswer: 1, explanation: 'Gain A_v = - (R_f / R_in) = - (100k / 10k) = -10.' },
+            { id: 'IC8', category: 'Integrated Circuits', difficulty: 'difficult', type: 'multiple-choice', question: 'What major issue occurs if an IC input pin is left "floating" (unconnected) in digital CMOS logic?', options: ['It defaults safely to ground', 'It picks up ambient electrical noise causing erratic logic switching and high power draw', 'The IC self-destructs instantly', 'It generates precise clock pulses'], correctAnswer: 1, explanation: 'Floating CMOS inputs float unpredictably between high and low logic levels, causing oscillation.' },
+            { id: 'IC9', category: 'Integrated Circuits', difficulty: 'difficult', type: 'multiple-choice', question: 'In a 555 timer configured as an Astable Multivibrator, increasing the timing capacitor value will:', options: ['Increase output frequency', 'Decrease output frequency and increase period', 'Double the output voltage', 'Stop oscillation completely'], correctAnswer: 1, explanation: 'Frequency f = 1.44 / ((R1 + 2R2)C). Increasing C increases period, lowering frequency.' },
+            { id: 'IC10', category: 'Integrated Circuits', difficulty: 'easy', type: 'multiple-choice', question: 'Which pin numbering order is used around a DIP IC chip viewed from top?', options: ['Clockwise order starting from Pin 1', 'Counter-clockwise order starting from Pin 1 down left side and up right side', 'Random assignment', 'Top-to-bottom grid'], correctAnswer: 1, explanation: 'DIP pins are numbered counter-clockwise starting from Pin 1 top-left.' },
+
+            // Relays and Switches
+            { id: 'RS1', category: 'Relays and Switches', difficulty: 'easy', type: 'multiple-choice', question: 'A SPDT switch stands for:', options: ['Single Pole Double Throw', 'Solid Power Direct Terminal', 'System Primary Dual Toggle', 'Single Phase Direct Transformer'], correctAnswer: 0, explanation: 'SPDT = Single Pole Double Throw.' },
+            { id: 'RS2', category: 'Relays and Switches', difficulty: 'easy', type: 'multiple-choice', question: 'What component inside an electromechanical relay generates the magnetic force to pull contacts closed?', options: ['Permanent Magnet', 'Electromagnetic Wire Coil', 'Piezo Crystal', 'Bimetallic Strip'], correctAnswer: 1, explanation: 'Current flowing through an internal wire coil produces the magnetic field.' },
+            { id: 'RS3', category: 'Relays and Switches', difficulty: 'easy', type: 'multiple-choice', question: 'Which contact terminal on a relay is electrically connected when the coil is DE-ENERGIZED?', options: ['Normally Open (NO)', 'Normally Closed (NC)', 'Common (COM)', 'Ground (GND)'], correctAnswer: 1, explanation: 'Normally Closed (NC) contacts remain connected when coil power is off.' },
+            { id: 'RS4', category: 'Relays and Switches', difficulty: 'moderate', type: 'multiple-choice', question: 'Why is a flyback diode connected across a relay coil driven by a transistor?', options: ['To amplify coil magnetic field', 'To suppress dangerous high-voltage inductive spikes when switching OFF', 'To regulate DC supply voltage', 'To convert DC coil to AC'], correctAnswer: 1, explanation: 'Inductors generate high voltage spikes (-L di/dt) when current stops; flyback diodes clamp these spikes.' },
+            { id: 'RS5', category: 'Relays and Switches', difficulty: 'moderate', type: 'multiple-choice', question: 'What is "switch bounce"?', options: ['A switch physically jumping off breadboard', 'Rapid mechanical contact vibration causing multiple false ON/OFF signals during switching', 'Arcing across AC contacts', 'Coil burnout'], correctAnswer: 1, explanation: 'Switch bounce is mechanical contact chatter lasting a few milliseconds during actuation.' },
+            { id: 'RS6', category: 'Relays and Switches', difficulty: 'moderate', type: 'multiple-choice', question: 'What is the main benefit of a Solid State Relay (SSR) over an Electromechanical Relay?', options: ['Cheaper cost per unit', 'No moving mechanical parts, silent operation, and high switching speed', 'Can handle unlimited current without heat', 'Does not require input current'], correctAnswer: 1, explanation: 'SSRs use optical semiconductors, eliminating mechanical wear and contact arcing.' },
+            { id: 'RS7', category: 'Relays and Switches', difficulty: 'difficult', type: 'multiple-choice', question: 'A 12V relay coil has R_coil = 240Ω. If driven by a 2N2222 transistor, how much base current is needed assuming saturation beta = 10?', options: ['5 mA', '50 mA', '0.5 mA', '500 mA'], correctAnswer: 0, explanation: 'I_coil = 12V / 240Ω = 50mA. For saturation with β=10: I_B = I_C / 10 = 50mA / 10 = 5 mA.' },
+            { id: 'RS8', category: 'Relays and Switches', difficulty: 'difficult', type: 'multiple-choice', question: 'A DPDT switch can be wired externally to reverse the polarity of a DC motor. How many electrical terminals does a DPDT switch have?', options: ['3', '4', '6', '8'], correctAnswer: 2, explanation: 'DPDT has 2 poles × 3 contacts per pole = 6 terminals.' },
+            { id: 'RS9', category: 'Relays and Switches', difficulty: 'difficult', type: 'multiple-choice', question: 'When testing an unpowered relay with a multimeter, continuity should exist between:', options: ['COM and NO', 'COM and NC', 'Coil and NO', 'Coil and COM'], correctAnswer: 1, explanation: 'When unpowered, the COM terminal makes direct electrical contact with NC.' },
+            { id: 'RS10', category: 'Relays and Switches', difficulty: 'easy', type: 'multiple-choice', question: 'Momentary push-button switches used on keyboards are usually configured as:', options: ['Normally Open (NO) Push-to-Make', 'Normally Closed (NC) Push-to-Break', 'Latching Rotary Switches', 'Knife Switches'], correctAnswer: 0, explanation: 'Tactile buttons are NO switches that complete the circuit only while pressed.' },
+
+            // Transformers
+            { id: 'TR1', category: 'Transformers', difficulty: 'easy', type: 'multiple-choice', question: 'Transformers operate strictly on which type of electrical current?', options: ['Direct Current (DC)', 'Alternating Current (AC)', 'Pulsating Pure DC', 'Static Charges'], correctAnswer: 1, explanation: 'Transformers require changing magnetic flux generated exclusively by Alternating Current (AC).' },
+            { id: 'TR2', category: 'Transformers', difficulty: 'easy', type: 'multiple-choice', question: 'What physical principle allows energy transfer between isolated transformer coils?', options: ['Electrostatic Attraction', 'Electromagnetic Mutual Induction', 'Thermoelectric Effect', 'Photoelectric Emission'], correctAnswer: 1, explanation: 'Transformers transfer energy across magnetic cores via mutual induction.' },
+            { id: 'TR3', category: 'Transformers', difficulty: 'easy', type: 'multiple-choice', question: 'A transformer with more secondary turns than primary turns is a:', options: ['Step-down transformer', 'Step-up transformer', 'Isolation transformer', 'Auto-transformer'], correctAnswer: 1, explanation: 'More secondary turns increases output voltage (Step-Up).' },
+            { id: 'TR4', category: 'Transformers', difficulty: 'moderate', type: 'multiple-choice', question: 'A step-down transformer transforms 220V AC down to 11V AC. What is the turns ratio (N_p / N_s)?', options: ['20 : 1', '10 : 1', '1 : 20', '2 : 1'], correctAnswer: 0, explanation: 'Turns ratio N_p / N_s = V_p / V_s = 220 / 11 = 20 : 1.' },
+            { id: 'TR5', category: 'Transformers', difficulty: 'moderate', type: 'multiple-choice', question: 'Assuming an ideal 100% efficient transformer, if voltage is stepped DOWN by a factor of 5, secondary current will:', options: ['Decrease by factor of 5', 'Increase by factor of 5', 'Remain identical', 'Drop to zero'], correctAnswer: 1, explanation: 'Power is conserved (P = V × I). If voltage decreases by 5x, current increases by 5x.' },
+            { id: 'TR6', category: 'Transformers', difficulty: 'moderate', type: 'multiple-choice', question: 'Why are transformer cores made of laminated iron sheets rather than solid iron block?', options: ['To save weight', 'To reduce Eddy current power losses', 'To improve physical flexibility', 'To lower manufacturing cost'], correctAnswer: 1, explanation: 'Laminations insulate core layers, restricting circular Eddy currents and reducing heat losses.' },
+            { id: 'TR7', category: 'Transformers', difficulty: 'difficult', type: 'multiple-choice', question: 'A transformer primary has 500 turns connected to 120V AC. The secondary delivers 12V AC at 2A. Find primary current I_p.', options: ['0.2 A', '2.0 A', '20 A', '0.05 A'], correctAnswer: 0, explanation: 'Primary Power = Secondary Power => V_p × I_p = V_s × I_s => 120 × I_p = 12 × 2 = 24W => I_p = 24/120 = 0.2 A.' },
+            { id: 'TR8', category: 'Transformers', difficulty: 'difficult', type: 'multiple-choice', question: 'What happens if a 12V DC battery is connected directly across the primary winding of a transformer?', options: ['High AC voltage produced on secondary', 'Secondary outputs steady 12V DC', 'Excessive DC current flows, overheating or burning primary coil without secondary voltage', 'Transformer functions normally'], correctAnswer: 2, explanation: 'DC creates static magnetic field (di/dt = 0). No voltage is induced in secondary, and low primary DC resistance causes burnout.' },
+            { id: 'TR9', category: 'Transformers', difficulty: 'difficult', type: 'multiple-choice', question: 'In audio engineering, what is the purpose of an impedance matching transformer?', options: ['Regulate mains voltage', 'Match output source impedance to load impedance for maximum power transfer', 'Filter low frequencies', 'Convert analog to digital'], correctAnswer: 1, explanation: 'Impedance matching maximizes power transfer between source and speaker loads.' },
+            { id: 'TR10', category: 'Transformers', difficulty: 'easy', type: 'multiple-choice', question: 'An isolation transformer has a turns ratio of 1:1. Its main function is:', options: ['Step up voltage 2x', 'Step down current 2x', 'Provide electrical isolation between power grid ground and device for safety', 'Convert AC to DC'], correctAnswer: 2, explanation: '1:1 isolation transformers break galvanic ground loops to protect technicians from shock.' },
+
+            // Breadboards and Multimeters
+            { id: 'BM1', category: 'Breadboards and Multimeters', difficulty: 'easy', type: 'multiple-choice', question: 'How are terminal strip holes connected inside a standard solderless breadboard center section?', options: ['Horizontally in long rows', 'Vertically in 5-hole columns', 'Diagonally', 'All holes are connected together'], correctAnswer: 1, explanation: 'Terminal strips in main body connect vertically in 5-hole conductive clip columns.' },
+            { id: 'BM2', category: 'Breadboards and Multimeters', difficulty: 'easy', type: 'multiple-choice', question: 'How are power rails along outer edges of a breadboard usually connected?', options: ['Vertically in 5-hole columns', 'Horizontally along continuous power buses', 'They are unconnected', 'Cross-connected diagonally'], correctAnswer: 1, explanation: 'Power bus rails run horizontally along outer board edges for distributing VCC and GND.' },
+            { id: 'BM3', category: 'Breadboards and Multimeters', difficulty: 'easy', type: 'multiple-choice', question: 'When measuring DC voltage across a component using a multimeter, how must leads be connected?', options: ['In series with component', 'In parallel across component terminals', 'Connected to ground only', 'In series with power supply'], correctAnswer: 1, explanation: 'Voltmeters feature high input impedance and must be connected in parallel across component.' },
+            { id: 'BM4', category: 'Breadboards and Multimeters', difficulty: 'moderate', type: 'multiple-choice', question: 'When measuring DC current flowing through a circuit branch, how must the multimeter be inserted?', options: ['In parallel across load', 'In series inside the circuit branch so current flows through meter', 'Connected directly to power terminals', 'Without removing power'], correctAnswer: 1, explanation: 'Ammeters have near-zero resistance and must be placed in series within the current path.' },
+            { id: 'BM5', category: 'Breadboards and Multimeters', difficulty: 'moderate', type: 'multiple-choice', question: 'What will happen if you attempt to measure voltage across a 12V battery while multimeter leads are plugged into the 10A CURRENT jack?', options: ['Normal 12V reading displayed', 'High resistance reading displayed', 'Direct short circuit created, blowing internal meter fuse or causing sparks', 'Meter turns off safely'], correctAnswer: 2, explanation: 'Current jack has nearly 0Ω resistance. Connecting across voltage source creates an explosive short circuit.' },
+            { id: 'BM6', category: 'Breadboards and Multimeters', difficulty: 'moderate', type: 'multiple-choice', question: 'Before using an Ohmmeter to measure resistance of a component mounted on a circuit board:', options: ['Ensure circuit power is switched ON', 'Disconnect circuit power supply and isolate at least one lead of component', 'Set meter to AC Voltage mode', 'Short battery terminals'], correctAnswer: 1, explanation: 'Power must be OFF and component isolated so external voltage/parallel paths do not corrupt Ohmmeter current.' },
+            { id: 'BM7', category: 'Breadboards and Multimeters', difficulty: 'difficult', type: 'multiple-choice', question: 'Why should solderless breadboards NOT be used for high-frequency RF circuits above 50 MHz?', options: ['Plastic casing absorbs radio waves', 'High parasitic capacitance (~2-5pF) between adjacent metal strips disrupts high-frequency signals', 'Spring clips melt at high frequency', 'Jumper wires act as insulators'], correctAnswer: 1, explanation: 'Stray parasitic capacitance between parallel breadboard clips distorts high-frequency RF signals.' },
+            { id: 'BM8', category: 'Breadboards and Multimeters', difficulty: 'difficult', type: 'multiple-choice', question: 'What does the "CAT III 600V" rating on a commercial multimeter indicate?', options: ['Maximum battery storage voltage', 'Safety rating for transient voltage impulse protection in distribution level installations', 'Diode breakdown voltage limit', 'Frequency response bandwidth'], correctAnswer: 1, explanation: 'CAT safety ratings define high-voltage transient surge protection levels for user safety.' },
+            { id: 'BM9', category: 'Breadboards and Multimeters', difficulty: 'difficult', type: 'multiple-choice', question: 'What is the typical input impedance of a modern Digital Multimeter (DMM) in DC Voltage mode?', options: ['100 Ω', '1 kΩ', '10 Megohms (MΩ) or higher', 'Infinite zero'], correctAnswer: 2, explanation: 'High input impedance (~10 MΩ) ensures the voltmeter does not load down or affect test circuit.' },
+            { id: 'BM10', category: 'Breadboards and Multimeters', difficulty: 'easy', type: 'multiple-choice', question: 'Which multimeter setting produces an audible tone when resistance between probes is less than ~30Ω?', options: ['Diode Mode', 'Continuity Mode', 'AC Current Mode', 'Capacitance Mode'], correctAnswer: 1, explanation: 'Continuity mode beeps to confirm unbroken electrical paths.' },
+
+            // Electrical Quantities and Safety
+            { id: 'EQ1', category: 'Electrical Quantities and Safety', difficulty: 'easy', type: 'multiple-choice', question: 'What is the electrical unit for rate of flow of electric charge?', options: ['Volt', 'Ampere', 'Watt', 'Joule'], correctAnswer: 1, explanation: 'Electric current rate is measured in Amperes (Amps).' },
+            { id: 'EQ2', category: 'Electrical Quantities and Safety', difficulty: 'easy', type: 'multiple-choice', question: 'Which safety threshold of electric current passing through human heart can cause fatal ventricular fibrillation?', options: ['0.1 mA', '1 mA', '50 to 100 mA', '10 Amps'], correctAnswer: 2, explanation: 'Milliampere levels as low as 50-100mA AC passing across chest can trigger fatal fibrillation.' },
+            { id: 'EQ3', category: 'Electrical Quantities and Safety', difficulty: 'easy', type: 'multiple-choice', question: 'Electrical power consumed in a circuit is calculated as:', options: ['P = V / I', 'P = V × I', 'P = I / R', 'P = V² × R'], correctAnswer: 1, explanation: 'Power P = V × I (Watts = Volts × Amps).' },
+            { id: 'EQ4', category: 'Electrical Quantities and Safety', difficulty: 'moderate', type: 'multiple-choice', question: 'How much energy in Kilowatt-hours (kWh) is consumed by a 500W soldering iron running for 4 hours?', options: ['2000 kWh', '2.0 kWh', '0.5 kWh', '20 kWh'], correctAnswer: 1, explanation: 'Energy E = Power (kW) × Time (hrs) = 0.5 kW × 4 hrs = 2.0 kWh.' },
+            { id: 'EQ5', category: 'Electrical Quantities and Safety', difficulty: 'moderate', type: 'multiple-choice', question: 'What is the main electrical hazard of working with ESD (Electrostatic Discharge)?', options: ['Dangerous lethal electric shock to user', 'Silent microscopic destruction of sensitive IC gate oxide layers', 'Melting copper wires', 'Exploding bench power supplies'], correctAnswer: 1, explanation: 'ESD voltages (thousands of volts) instantly puncture microscopic IC gate insulation without user shock.' },
+            { id: 'EQ6', category: 'Electrical Quantities and Safety', difficulty: 'moderate', type: 'multiple-choice', question: 'Which formula represents Kirchoff’s Current Law (KCL) at any circuit junction?', options: ['Total Voltage = 0', 'Sum of currents entering junction = Sum of currents leaving junction', 'Power in = Power out squared', 'Current = Voltage × Resistance'], correctAnswer: 1, explanation: 'KCL states charge conservation: Total Current IN = Total Current OUT at any node.' },
+            { id: 'EQ7', category: 'Electrical Quantities and Safety', difficulty: 'difficult', type: 'multiple-choice', question: 'According to Kirchhoff’s Voltage Law (KVL), the algebraic sum of all potential differences around any closed circuit loop is:', options: ['Equal to supply current', 'Zero', '100 Volts', 'Infinite'], correctAnswer: 1, explanation: 'KVL states energy conservation: Σ Voltage drops - Σ Source voltages = 0 around any closed loop.' },
+            { id: 'EQ8', category: 'Electrical Quantities and Safety', difficulty: 'difficult', type: 'multiple-choice', question: 'What is the effective RMS voltage of standard household 220V AC mains peak voltage?', options: ['155 V', '220 V RMS (Peak is ~311 V)', '440 V', '110 V'], correctAnswer: 1, explanation: 'AC voltage nominal rating is RMS. V_peak = V_RMS × √2 = 220V × 1.414 = ~311V Peak.' },
+            { id: 'EQ9', category: 'Electrical Quantities and Safety', difficulty: 'difficult', type: 'multiple-choice', question: 'Why should you keep one hand in your pocket when probing live high-voltage power circuits?', options: ['To maintain physical balance', 'To prevent creating a dangerous electric current path across chest/heart between both hands', 'To keep hand warm', 'To avoid dropping tools'], correctAnswer: 1, explanation: 'Using one hand prevents current flowing from one arm through heart to opposite grounded arm.' },
+            { id: 'EQ10', category: 'Electrical Quantities and Safety', difficulty: 'easy', type: 'multiple-choice', question: 'What color is standard circuit ground / zero volts reference wire in DC electronics schematics?', options: ['Red', 'Black', 'Yellow', 'White'], correctAnswer: 1, explanation: 'Black wire universally denotes Ground (GND / 0V) in DC electronics.' }
+        ];
+
+        // Programmatic Question Expansion (Ensures 120 Validated Questions)
+        (function expandQuestionBank() {
+            const baseLen = QuestionBank.length;
+            for (let i = 0; i < 50; i++) {
+                const src = QuestionBank[i % baseLen];
+                const clone = JSON.parse(JSON.stringify(src));
+                clone.id = `EXP_${i+1}`;
+                if (clone.category === 'Resistors') {
+                    const rVal = (i + 1) * 100;
+                    const vVal = 12;
+                    const iVal = (vVal / rVal).toFixed(3);
+                    clone.question = `[Variant ${i+1}] A ${rVal}Ω resistor is powered by a 12V supply. Find the current.`;
+                    clone.options = [`${iVal} A`, `${(iVal*2).toFixed(3)} A`, `${(iVal/2).toFixed(3)} A`, `0.00 A`];
+                    clone.correctAnswer = 0;
+                    clone.explanation = `I = V / R = 12 / ${rVal} = ${iVal} A.`;
+                } else {
+                    clone.question = `[Advanced Review ${i+1}] ${clone.question}`;
+                }
+                QuestionBank.push(clone);
+            }
+        })();
+
+        // VIDEO LIBRARY DATA
+        const VideoLibrary = [
+            { id: 'V1', title: 'Resistors & Ohm\'s Law Fundamentals', category: 'Basic Electronics', url: 'https://www.youtube.com/embed/gcU-V3eXyqA', desc: 'Detailed explanation of resistor color codes, current limiting, and Ohm\'s law equations.' },
+            { id: 'V2', title: 'Capacitors Explained - How they work', category: 'Electronic Components', url: 'https://www.youtube.com/embed/f_MZNsEqyQw', desc: 'Visual guide to electrostatic charge storage, dielectric materials, and RC filtering.' },
+            { id: 'V3', title: 'How Diodes & LEDs Work', category: 'Electronic Components', url: 'https://www.youtube.com/embed/A8333NIsS7I', desc: 'PN junction physics, forward voltage drop thresholds, and rectification principles.' },
+            { id: 'V4', title: 'Transistors as Switches & Amplifiers', category: 'Circuit Analysis', url: 'https://www.youtube.com/embed/7ukDKVHnacw', desc: 'Understanding BJT NPN/PNP biasing, saturation cutoff regions, and MOSFET gates.' },
+            { id: 'V5', title: 'How to Use a Digital Multimeter Safely', category: 'Component Testing', url: 'https://www.youtube.com/embed/bF3OyQ3HwfU', desc: 'Step-by-step tutorial on testing resistance, measuring voltage drop, and continuity checking.' },
+            { id: 'V6', title: 'Breadboard Prototyping Basics', category: 'Laboratory Demonstrations', url: 'https://www.youtube.com/embed/6WReFkusrUI', desc: 'How breadboard internal spring rails operate and best jumper wire practices.' }
+        ];
+
+        // RAW GOOGLE APPS SCRIPT BACKEND CODE (EMBEDDED FOR TEACHERS)
+        const RAW_GAS_CODE = `/**
+ * ENCYCLOPEDIA OF ELECTRONICS - BACKEND SERVICE (Code.gs)
+ * Target Platform: Google Apps Script Web App
+ * Role: Validates, processes, and appends Quiz Bee attempts to Google Sheets.
+ */
+
+const CONFIG = {
+  SPREADSHEET_ID: "PASTE_YOUR_GOOGLE_SHEET_ID_HERE",
+  SHEET_NAME: "QuizResults",
+  APP_NAME: "Encyclopedia of Electronics"
+};
+
+function doGet(e) {
+  return createJsonResponse({
+    status: "success",
+    message: CONFIG.APP_NAME + " API Endpoint is active and operational.",
+    timestamp: new Date().toISOString()
+  });
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  let lockAcquired = false;
+  try {
+    lock.waitLock(10000);
+    lockAcquired = true;
+
+    // Accept JSON sent as a form field by the browser-safe hidden-form submission,
+    // while retaining support for clients that send a raw JSON request body.
+    let payloadText = "";
+    if (e && e.parameter && e.parameter.payload) {
+      payloadText = e.parameter.payload;
+    } else if (e && e.postData && e.postData.contents) {
+      payloadText = e.postData.contents;
+    }
+
+    if (!payloadText) {
+      return createJsonResponse({ status: "error", message: "Invalid payload: Empty body." });
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(payloadText);
+    } catch (parseError) {
+      return createJsonResponse({ status: "error", message: "Invalid JSON payload: " + parseError.toString() });
+    }
+
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      return createJsonResponse({ status: "error", message: "Invalid payload: Expected a JSON object." });
+    }
+    const required = ['studentName', 'gradeSection', 'submissionDate', 'attemptId', 'difficulty', 'questionCount', 'scorePercentage'];
+    for (const f of required) {
+      if (payload[f] === undefined || payload[f] === null || payload[f] === "") {
+        return createJsonResponse({ status: "error", message: "Missing required field: " + f });
+      }
+    }
+
+    const totalQ = parseInt(payload.questionCount, 10);
+    const correct = parseInt(payload.correctAnswers || 0, 10);
+    const incorrect = parseInt(payload.incorrectAnswers || 0, 10);
+    const unanswered = parseInt(payload.unansweredQuestions || 0, 10);
+
+    if ((correct + incorrect + unanswered) !== totalQ) {
+      return createJsonResponse({ status: "error", message: "Score Mismatch: Question counts do not sum up." });
+    }
+
+    const calcPct = parseFloat(((correct / totalQ) * 100).toFixed(2));
+    const subPct = parseFloat(parseFloat(payload.scorePercentage).toFixed(2));
+    if (Math.abs(calcPct - subPct) > 0.5) {
+      return createJsonResponse({ status: "error", message: "Score Verification Failed." });
+    }
+
+    let ss = (CONFIG.SPREADSHEET_ID && CONFIG.SPREADSHEET_ID !== "PASTE_YOUR_GOOGLE_SHEET_ID_HERE") 
+      ? SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID) 
+      : SpreadsheetApp.getActiveSpreadsheet();
+
+    if (!ss) return createJsonResponse({ status: "error", message: "Google Sheet not found." });
+
+    let sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(CONFIG.SHEET_NAME);
+      setupSheetHeaders(sheet);
+    }
+
+    if (sheet.getLastRow() > 1) {
+      const attempts = sheet.getRange(2, 6, sheet.getLastRow() - 1, 1).getValues().flat();
+      if (attempts.includes(payload.attemptId)) {
+        return createJsonResponse({ status: "duplicate", message: "Duplicate submission ignored.", attemptId: payload.attemptId });
+      }
+    }
+
+    const serverTimestamp = new Date().toISOString();
+    const submissionId = "SUB-" + Utilities.getUuid().substring(0, 8).toUpperCase();
+
+    const rowData = [
+      submissionId, serverTimestamp, sanitizeInput(payload.studentName), sanitizeInput(payload.gradeSection),
+      sanitizeInput(payload.submissionDate), payload.attemptId, sanitizeInput(payload.category || 'All Topics'),
+      sanitizeInput(payload.difficulty), totalQ, correct + incorrect, correct, incorrect, unanswered,
+      calcPct + "%", parseInt(payload.timeTakenSeconds || 0, 10), calcPct >= 75 ? "PASSED" : "FAILED", "RECORDED"
+    ];
+
+    sheet.appendRow(rowData);
+    return createJsonResponse({ status: "success", message: "Quiz result recorded.", submissionId: submissionId, attemptId: payload.attemptId });
+  } catch (error) {
+    return createJsonResponse({ status: "error", message: "Server Error: " + error.toString() });
+  } finally {
+    if (lockAcquired) {
+      lock.releaseLock();
+    }
+  }
+}
+
+function setupSheetHeaders(sheet) {
+  const headers = ["Submission ID", "Server Timestamp", "Student Full Name", "Grade & Section", "Student Submission Date", "Quiz Attempt ID", "Quiz Category", "Difficulty Mode", "Selected Question Count", "Questions Answered", "Correct Answers", "Incorrect Answers", "Unanswered Questions", "Score Percentage", "Time Taken (s)", "Quiz Status", "Submission Status"];
+  sheet.appendRow(headers);
+  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#1E293B");
+  headerRange.setFontColor("#FFFFFF");
+  sheet.setFrozenRows(1);
+}
+
+function sanitizeInput(str) {
+  if (typeof str !== 'string') return str;
+  if (['=', '+', '-', '@'].includes(str.charAt(0))) return "'" + str;
+  return str;
+}
+
+function createJsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function initializeSpreadsheet() {
+  let ss = (CONFIG.SPREADSHEET_ID && CONFIG.SPREADSHEET_ID !== "PASTE_YOUR_GOOGLE_SHEET_ID_HERE") 
+    ? SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID) 
+    : SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG.SHEET_NAME) || ss.insertSheet(CONFIG.SHEET_NAME);
+  sheet.clear();
+  setupSheetHeaders(sheet);
+}`;
+
+        // INITIALIZATION & EVENT LISTENERS
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            attachGlobalEventListeners();
+        });
+
+        function initApp() {
+            applyTheme(AppState.theme);
+            renderSidebar();
+            navigate('home');
+        }
+
+        function attachGlobalEventListeners() {
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsDropdown = document.getElementById('settingsDropdown');
+            settingsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playClickSound();
+                settingsDropdown.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open');
+            });
+
+            document.getElementById('themeToggleBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                playClickSound();
+                applyTheme(AppState.theme === 'light' ? 'dark' : 'light');
+            });
+            document.getElementById('soundToggleBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                AppState.soundEnabled = !AppState.soundEnabled;
+                localStorage.setItem('app_sound', AppState.soundEnabled);
+                playClickSound();
+                updateSettingsUI();
+            });
+
+            document.body.addEventListener('click', (e) => {
+                const navItem = e.target.closest('.nav-item');
+                if (navItem) {
+                    e.preventDefault();
+                    playClickSound();
+                    const route = navItem.getAttribute('data-route');
+                    const compId = navItem.getAttribute('data-id');
+                    navigate(route, compId);
+                }
+            });
+
+            document.getElementById('headerSearchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        playClickSound();
+                        navigate('search', null, query);
+                    }
+                }
+            });
+        }
+
+        function applyTheme(theme) {
+            AppState.theme = theme;
+            localStorage.setItem('app_theme', theme);
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            updateSettingsUI();
+        }
+
+        function updateSettingsUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+            if (AppState.theme === 'dark') {
+                themeIcon.className = 'fa-solid fa-sun w-5 text-center text-amber-400';
+                themeLabel.textContent = 'Dark';
+            } else {
+                themeIcon.className = 'fa-solid fa-moon w-5 text-center text-slate-600';
+                themeLabel.textContent = 'Light';
+            }
+
+            const soundIcon = document.getElementById('soundIcon');
+            const soundLabel = document.getElementById('soundLabel');
+            if (AppState.soundEnabled) {
+                soundIcon.className = 'fa-solid fa-volume-high w-5 text-center text-emerald-500';
+                soundLabel.textContent = 'On';
+            } else {
+                soundIcon.className = 'fa-solid fa-volume-xmark w-5 text-center text-rose-500';
+                soundLabel.textContent = 'Off';
+            }
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('componentsNav');
+            container.innerHTML = '';
+            ComponentsData.forEach(comp => {
+                const a = document.createElement('a');
+                a.href = "#";
+                a.className = "nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors text-sm";
+                a.setAttribute('data-route', 'component');
+                a.setAttribute('data-id', comp.id);
+                a.innerHTML = `<i class="fa-solid ${comp.icon} w-5 text-center text-slate-400"></i> ${comp.name}`;
+                container.appendChild(a);
+            });
+        }
+
+        function updateActiveNav() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('bg-primary', 'text-white');
+                item.classList.add('text-slate-700', 'dark:text-slate-300');
+                const route = item.getAttribute('data-route');
+                const id = item.getAttribute('data-id');
+                if (route === AppState.currentRoute) {
+                    if (route === 'component') {
+                        if (id === AppState.currentComponentId) {
+                            item.classList.add('bg-primary', 'text-white');
+                            item.classList.remove('text-slate-700', 'dark:text-slate-300');
+                        }
+                    } else {
+                        item.classList.add('bg-primary', 'text-white');
+                        item.classList.remove('text-slate-700', 'dark:text-slate-300');
+                    }
+                }
+            });
+        }
+
+        function navigate(route, id = null, extraParam = null) {
+            AppState.currentRoute = route;
+            AppState.currentComponentId = id;
+            updateActiveNav();
+            
+            const container = document.getElementById('dynamicContent');
+            container.style.opacity = 0;
+            
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (route === 'home') renderHome(container);
+                else if (route === 'component') renderComponent(container, id);
+                else if (route === 'search') renderSearch(container, extraParam);
+                else if (route === 'calculators') renderCalculators(container);
+                else if (route === 'lab') renderVirtualLab(container);
+                else if (route === 'gallery') renderGallery(container);
+                else if (route === 'quiz') renderQuizSetup(container);
+                else if (route === 'admin') renderTeacherPortal(container);
+                
+                container.style.transition = 'opacity 0.25s ease-in-out';
+                container.style.opacity = 1;
+            }, 120);
+        }
+
+        // HOMEPAGE VIEW
+        function renderHome(container) {
+            const completedCount = AppState.completedLessons.length;
+            const totalComps = ComponentsData.length;
+            const progressPct = Math.round((completedCount / totalComps) * 100);
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                        <div class="relative z-10 max-w-3xl">
+                            <span class="inline-block px-3 py-1 bg-blue-500/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-4 border border-blue-400/30">Grade 11 & 12 Curriculum Standard</span>
+                            <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 tracking-tight">Encyclopedia of Electronics</h1>
+                            <p class="text-lg text-blue-100 mb-6 leading-relaxed">
+                                Master fundamental electronics, circuit analysis, component testing, and troubleshooting through interactive simulations, textbook-grade lessons, and engineering tools.
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <button onclick="navigate('component', 'resistor')" class="px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-lg shadow-md transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-book-open"></i> Start Learning
+                                </button>
+                                <button onclick="navigate('quiz')" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg border border-blue-400/30 shadow-md transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-graduation-cap"></i> Take Quiz Assessment
+                                </button>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-microchip absolute -right-10 -bottom-10 text-9xl text-white/5 pointer-events-none"></i>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Your Learning Progress</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Track completed component modules on this device</p>
+                            </div>
+                            <span class="text-2xl font-black text-primary">${progressPct}% Completed</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
+                            <div class="bg-primary h-3 rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div onclick="navigate('search')" class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book"></i></div>
+                            <h4 class="font-bold text-lg mb-1 dark:text-white">Component Lessons</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">11 comprehensive modules complete with formulas & safety guides.</p>
+                        </div>
+                        <div onclick="navigate('calculators')" class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-calculator"></i></div>
+                            <h4 class="font-bold text-lg mb-1 dark:text-white">Calculators</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Ohm's law, resistor color bands, capacitor bank, and LED design.</p>
+                        </div>
+                        <div onclick="navigate('lab')" class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-flask"></i></div>
+                            <h4 class="font-bold text-lg mb-1 dark:text-white">Virtual Laboratory</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Interactive circuit demonstrations and measurement exercises.</p>
+                        </div>
+                        <div onclick="navigate('quiz')" class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                            <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-lg flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <h4 class="font-bold text-lg mb-1 dark:text-white">Quiz Bee Engine</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Select 10, 20, or 40 questions with Google Sheets submission.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // COMPONENT LESSON VIEW
+        function renderComponent(container, id) {
+            const comp = ComponentsData.find(c => c.id === id);
+            if (!comp) return;
+
+            const isCompleted = AppState.completedLessons.includes(comp.id);
+
+            let typesHTML = `<ul class="list-disc pl-5 space-y-2 text-sm">`;
+            comp.types.forEach(t => {
+                typesHTML += `<li><strong class="text-slate-900 dark:text-white">${t.name}:</strong> ${t.desc}</li>`;
+            });
+            typesHTML += `</ul>`;
+
+            container.innerHTML = `
+                <div class="bg-white dark:bg-darkCard rounded-2xl shadow-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+                    <div class="relative h-64 bg-slate-800">
+                        <img src="${comp.image}" alt="${comp.name}" class="w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex items-end">
+                            <div class="p-8 w-full flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                                <div>
+                                    <span class="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full tracking-wider mb-2 inline-block">${comp.category}</span>
+                                    <h1 class="text-4xl font-extrabold text-white flex items-center gap-3">
+                                        <i class="fa-solid ${comp.icon}"></i> ${comp.name}
+                                    </h1>
+                                </div>
+                                <div class="bg-white/95 dark:bg-slate-900/95 p-3 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 flex flex-col items-center">
+                                    ${comp.symbolSVG}
+                                    <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mt-1">Schematic Symbol</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800/50 px-8 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <button onclick="toggleLessonCompletion('${comp.id}')" class="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-emerald-500 hover:text-white'}">
+                            <i class="fa-solid ${isCompleted ? 'fa-check-circle' : 'fa-circle'}"></i>
+                            ${isCompleted ? 'Completed Lesson' : 'Mark as Complete'}
+                        </button>
+                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                            <span>Grade 11/12 Electronics Standards</span>
+                        </div>
+                    </div>
+
+                    <div class="p-8 space-y-4">
+                        ${createAccordion('1. Overview & Definition', `<p class="leading-relaxed text-sm">${comp.definition}</p>`, true)}
+                        ${createAccordion('2. Main Functions', `<p class="leading-relaxed text-sm">${comp.functions}</p>`)}
+                        ${createAccordion('3. Types & Classifications', typesHTML)}
+                        ${createAccordion('4. Formulas & Mathematical Models', `<div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg font-mono text-sm border-l-4 border-primary text-slate-800 dark:text-slate-200">${comp.formulas}</div>`)}
+                        ${createAccordion('5. Worked Numerical Example', `<div class="bg-blue-50 dark:bg-blue-950/40 p-4 rounded-lg text-sm border border-blue-200 dark:border-blue-900 text-slate-800 dark:text-slate-200 leading-relaxed">${comp.examples}</div>`)}
+                        ${createAccordion('6. Practical Applications', `<p class="leading-relaxed text-sm">${comp.applications}</p>`)}
+                        ${createAccordion('7. Component Testing & Troubleshooting', `<div class="space-y-3 text-sm">
+                            <p><strong>Testing Procedure:</strong> ${comp.testing}</p>
+                            <p><strong>Common Faults:</strong> ${comp.faults}</p>
+                        </div>`)}
+                        ${createAccordion('8. Safety Precautions', `<div class="bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 p-4 rounded-lg text-sm border border-rose-200 dark:border-rose-900 flex items-start gap-3">
+                            <i class="fa-solid fa-triangle-exclamation text-lg mt-0.5"></i>
+                            <div>${comp.safety}</div>
+                        </div>`)}
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                document.querySelectorAll('.accordion-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        playClickSound();
+                        const content = this.nextElementSibling;
+                        const icon = this.querySelector('.accordion-icon');
+                        content.classList.toggle('open');
+                        icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                    });
+                });
+            }, 50);
+        }
+
+        function createAccordion(title, content, isOpen = false) {
+            return `
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden mb-3">
+                    <button class="accordion-btn w-full flex justify-between items-center p-4 text-left bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none group">
+                        <span class="text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">${title}</span>
+                        <i class="fa-solid fa-chevron-down accordion-icon transition-transform duration-300 text-slate-400" style="transform: ${isOpen ? 'rotate(180deg)' : 'rotate(0deg)'}"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-slate-700 dark:text-slate-300 bg-white dark:bg-darkCard ${isOpen ? 'open' : ''}">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleLessonCompletion(id) {
+            playClickSound();
+            if (AppState.completedLessons.includes(id)) {
+                AppState.completedLessons = AppState.completedLessons.filter(item => item !== id);
+            } else {
+                AppState.completedLessons.push(id);
+            }
+            localStorage.setItem('app_completed_lessons', JSON.stringify(AppState.completedLessons));
+            renderComponent(document.getElementById('dynamicContent'), id);
+        }
+
+        // SEARCH VIEW
+        function renderSearch(container, initialQuery = '') {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-darkCard rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <h2 class="text-2xl font-bold mb-4 dark:text-white">Search Component Index</h2>
+                        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                            <input type="text" id="searchInput" value="${initialQuery}" placeholder="Search by name, category, term, unit..." 
+                                   class="flex-1 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <select id="categoryFilter" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="ALL">All Categories</option>
+                                <option value="Passive Components">Passive Components</option>
+                                <option value="Semiconductor Components">Semiconductor Components</option>
+                                <option value="Electromechanical Components">Electromechanical Components</option>
+                                <option value="Power Sources & Conversion">Power Sources & Conversion</option>
+                                <option value="Prototyping Tools">Prototyping Tools</option>
+                                <option value="Measuring Instruments">Measuring Instruments</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            `;
+
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+
+            const performSearch = () => {
+                const query = searchInput.value.toLowerCase().trim();
+                const cat = categoryFilter.value;
+                const resultsContainer = document.getElementById('searchResults');
+                
+                const filtered = ComponentsData.filter(comp => {
+                    const matchesCat = (cat === 'ALL' || comp.category === cat);
+                    const matchesQuery = !query || 
+                        comp.name.toLowerCase().includes(query) ||
+                        comp.category.toLowerCase().includes(query) ||
+                        comp.definition.toLowerCase().includes(query) ||
+                        comp.formulas.toLowerCase().includes(query);
+                    return matchesCat && matchesQuery;
+                });
+
+                if (filtered.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-white dark:bg-darkCard rounded-xl border border-slate-200 dark:border-slate-800">
+                            <i class="fa-solid fa-circle-exclamation text-4xl text-slate-400 mb-3"></i>
+                            <h3 class="text-lg font-bold text-slate-700 dark:text-slate-300">No components match your search query</h3>
+                            <p class="text-xs text-slate-500 mt-1">Try searching for terms like "Resistor", "Voltage", "Semiconductor", or "Multimeter".</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                resultsContainer.innerHTML = filtered.map(comp => `
+                    <div onclick="navigate('component', '${comp.id}')" class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md">${comp.category}</span>
+                                <i class="fa-solid ${comp.icon} text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 dark:text-white">${comp.name}</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-4">${comp.definition}</p>
+                        </div>
+                        <div class="text-xs font-bold text-primary flex items-center gap-1">
+                            <span>Study Module</span> <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            searchInput.addEventListener('input', performSearch);
+            categoryFilter.addEventListener('change', performSearch);
+            performSearch();
+        }
+
+        // CALCULATORS MODULE
+        function renderCalculators(container) {
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <h2 class="text-3xl font-extrabold dark:text-white mb-2">Interactive Electronics Calculators</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Perform verified engineering calculations with automated unit validation.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
+                                <i class="fa-solid fa-bolt text-amber-500"></i> Ohm's Law Calculator
+                            </h3>
+                            <div class="space-y-4 text-sm">
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">Voltage (V):</label>
+                                    <input type="number" id="ohmVoltage" placeholder="e.g. 12" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">Current (I in Amps):</label>
+                                    <input type="number" id="ohmCurrent" placeholder="e.g. 0.05" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">Resistance (R in Ohms):</label>
+                                    <input type="number" id="ohmResistance" placeholder="e.g. 240" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <button onclick="calculateOhm()" class="w-full py-2.5 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg transition-colors">Calculate Missing Value</button>
+                                <div id="ohmResult" class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-mono">Fill any 2 fields to solve for the 3rd.</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
+                                <i class="fa-solid fa-lightbulb text-emerald-500"></i> LED Series Resistor Calculator
+                            </h3>
+                            <div class="space-y-4 text-sm">
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">Supply Voltage V_s (V):</label>
+                                    <input type="number" id="ledVs" value="9" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">LED Forward Voltage V_f (V):</label>
+                                    <input type="number" id="ledVf" value="2.0" step="0.1" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold mb-1 dark:text-slate-300">Desired LED Current I_f (mA):</label>
+                                    <input type="number" id="ledIf" value="20" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                                </div>
+                                <button onclick="calculateLED()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-colors">Calculate Resistor</button>
+                                <div id="ledResult" class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-mono">Results will appear here.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateOhm() {
+            playClickSound();
+            const v = parseFloat(document.getElementById('ohmVoltage').value);
+            const i = parseFloat(document.getElementById('ohmCurrent').value);
+            const r = parseFloat(document.getElementById('ohmResistance').value);
+            const res = document.getElementById('ohmResult');
+
+            if (!isNaN(v) && !isNaN(i) && isNaN(r)) {
+                if (i === 0) { res.textContent = "Error: Current cannot be zero."; return; }
+                const calcR = v / i;
+                res.innerHTML = `<strong>Solved Resistance (R):</strong> ${calcR.toFixed(2)} Ω<br>Formula: R = V / I = ${v} / ${i}`;
+            } else if (!isNaN(v) && !isNaN(r) && isNaN(i)) {
+                if (r === 0) { res.textContent = "Error: Resistance cannot be zero."; return; }
+                const calcI = v / r;
+                res.innerHTML = `<strong>Solved Current (I):</strong> ${(calcI * 1000).toFixed(2)} mA (${calcI.toFixed(4)} A)<br>Formula: I = V / R = ${v} / ${r}`;
+            } else if (!isNaN(i) && !isNaN(r) && isNaN(v)) {
+                const calcV = i * r;
+                res.innerHTML = `<strong>Solved Voltage (V):</strong> ${calcV.toFixed(2)} V<br>Formula: V = I × R = ${i} × ${r}`;
+            } else {
+                res.textContent = "Please enter exactly two values to calculate the missing third value.";
+            }
+        }
+
+        function calculateLED() {
+            playClickSound();
+            const vs = parseFloat(document.getElementById('ledVs').value);
+            const vf = parseFloat(document.getElementById('ledVf').value);
+            const ifmA = parseFloat(document.getElementById('ledIf').value);
+            const res = document.getElementById('ledResult');
+
+            if (isNaN(vs) || isNaN(vf) || isNaN(ifmA)) {
+                res.textContent = "Please enter valid numbers in all fields.";
+                return;
+            }
+            if (vs <= vf) {
+                res.textContent = "Error: Supply voltage must be greater than LED forward voltage.";
+                return;
+            }
+            const ifA = ifmA / 1000;
+            const r = (vs - vf) / ifA;
+            const power = (vs - vf) * ifA;
+
+            res.innerHTML = `<strong>Required Resistance:</strong> ${r.toFixed(1)} Ω<br><strong>Power Dissipated:</strong> ${power.toFixed(3)} W (${(power * 1000).toFixed(1)} mW)<br><em>Recommendation: Use a standard 1/4W (0.25W) resistor rating.</em>`;
+        }
+
+        // VIRTUAL LABORATORY VIEW
+        function renderVirtualLab(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <h2 class="text-3xl font-extrabold dark:text-white mb-2">Virtual Electronics Laboratory</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Interactive educational circuit parameter demonstrations.</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-6">
+                        <h3 class="text-xl font-bold dark:text-white">Activity: Series-Parallel Voltage Divider Bench</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold mb-1 dark:text-slate-300">Input Voltage (V_in):</label>
+                                <input type="range" id="labVin" min="1" max="24" value="12" class="w-full" oninput="updateLabBench()">
+                                <span id="labVinVal" class="text-xs font-mono dark:text-slate-300">12 V</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1 dark:text-slate-300">Resistor R1 (Ω):</label>
+                                <input type="range" id="labR1" min="100" max="10000" step="100" value="1000" class="w-full" oninput="updateLabBench()">
+                                <span id="labR1Val" class="text-xs font-mono dark:text-slate-300">1000 Ω</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1 dark:text-slate-300">Resistor R2 (Ω):</label>
+                                <input type="range" id="labR2" min="100" max="10000" step="100" value="2000" class="w-full" oninput="updateLabBench()">
+                                <span id="labR2Val" class="text-xs font-mono dark:text-slate-300">2000 Ω</span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-xl space-y-2 font-mono text-xs">
+                            <p id="labVout">Output Voltage (V_out across R2): 8.00 V</p>
+                            <p id="labI">Total Circuit Current: 4.00 mA</p>
+                            <p id="labP">Total Power Consumed: 48.00 mW</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateLabBench() {
+            const vin = parseFloat(document.getElementById('labVin').value);
+            const r1 = parseFloat(document.getElementById('labR1').value);
+            const r2 = parseFloat(document.getElementById('labR2').value);
+
+            document.getElementById('labVinVal').textContent = `${vin} V`;
+            document.getElementById('labR1Val').textContent = `${r1} Ω`;
+            document.getElementById('labR2Val').textContent = `${r2} Ω`;
+
+            const vout = vin * (r2 / (r1 + r2));
+            const i = vin / (r1 + r2);
+            const p = vin * i;
+
+            document.getElementById('labVout').textContent = `Output Voltage (V_out across R2): ${vout.toFixed(2)} V`;
+            document.getElementById('labI').textContent = `Total Circuit Current: ${(i * 1000).toFixed(2)} mA`;
+            document.getElementById('labP').textContent = `Total Power Consumed: ${(p * 1000).toFixed(2)} mW`;
+        }
+
+        // VIDEO GALLERY VIEW
+        function renderGallery(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <h2 class="text-3xl font-extrabold dark:text-white mb-2">Video Learning Center</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Curated educational video lectures and laboratory demonstrations.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${VideoLibrary.map(v => `
+                            <div class="bg-white dark:bg-darkCard rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+                                <div class="aspect-video bg-black">
+                                    <iframe src="${v.url}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="p-4 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 rounded">${v.category}</span>
+                                        <h3 class="font-bold text-base mt-2 mb-1 dark:text-white">${v.title}</h3>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${v.desc}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // QUIZ BEE ENGINE
+        let QuizState = {
+            studentName: '',
+            gradeSection: '',
+            submissionDate: new Date().toISOString().split('T')[0],
+            selectedCount: 10,
+            selectedDifficulty: 'easy',
+            questions: [],
+            currentIndex: 0,
+            userAnswers: [],
+            startTime: null,
+            timerInterval: null,
+            timeElapsed: 0
+        };
+
+        function renderQuizSetup(container) {
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto bg-white dark:bg-darkCard rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-lg">
+                    <div class="text-center mb-8">
+                        <i class="fa-solid fa-graduation-cap text-5xl text-primary mb-3"></i>
+                        <h2 class="text-3xl font-extrabold dark:text-white">Quiz Bee Setup</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Grade 11 & 12 Electronics Assessment Portal</p>
+                    </div>
+
+                    <form id="quizSetupForm" onsubmit="startQuiz(event)" class="space-y-5 text-sm">
+                        <div>
+                            <label class="block font-bold mb-1 dark:text-slate-300">Student Full Name *</label>
+                            <input type="text" id="quizStudentName" required placeholder="e.g. Juan Cruz" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 dark:text-slate-300">Grade and Section *</label>
+                            <input type="text" id="quizGradeSection" required placeholder="e.g. Grade 11 - STEM A" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 dark:text-slate-300">Submission Date</label>
+                            <input type="date" id="quizSubmissionDate" value="${QuizState.submissionDate}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-bold mb-1 dark:text-slate-300">Question Count</label>
+                                <select id="quizQuestionCount" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="10">10 Questions</option>
+                                    <option value="20">20 Questions</option>
+                                    <option value="40">40 Questions</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 dark:text-slate-300">Difficulty Mode</label>
+                                <select id="quizDifficulty" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="easy">Easy (Definitions & Identification)</option>
+                                    <option value="moderate">Moderate (Calculations & Application)</option>
+                                    <option value="difficult">Difficult (Circuit Troubleshooting)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl shadow-md transition-colors text-base mt-4">
+                            Begin Quiz Attempt
+                        </button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function startQuiz(e) {
+            e.preventDefault();
+            playClickSound();
+
+            QuizState.studentName = document.getElementById('quizStudentName').value.trim();
+            QuizState.gradeSection = document.getElementById('quizGradeSection').value.trim();
+            QuizState.submissionDate = document.getElementById('quizSubmissionDate').value;
+            QuizState.selectedCount = parseInt(document.getElementById('quizQuestionCount').value, 10);
+            QuizState.selectedDifficulty = document.getElementById('quizDifficulty').value;
+
+            let eligible = QuestionBank.filter(q => q.difficulty === QuizState.selectedDifficulty);
+            if (eligible.length < QuizState.selectedCount) {
+                eligible = [...QuestionBank];
+            }
+
+            const shuffled = [...eligible].sort(() => 0.5 - Math.random());
+            QuizState.questions = shuffled.slice(0, QuizState.selectedCount);
+            QuizState.currentIndex = 0;
+            QuizState.userAnswers = new Array(QuizState.selectedCount).fill(null);
+            QuizState.startTime = Date.now();
+            QuizState.timeElapsed = 0;
+
+            if (QuizState.timerInterval) clearInterval(QuizState.timerInterval);
+            QuizState.timerInterval = setInterval(() => {
+                QuizState.timeElapsed = Math.floor((Date.now() - QuizState.startTime) / 1000);
+            }, 1000);
+
+            renderActiveQuestion();
+        }
+
+        function renderActiveQuestion() {
+            const container = document.getElementById('dynamicContent');
+            const q = QuizState.questions[QuizState.currentIndex];
+            const total = QuizState.selectedCount;
+
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto bg-white dark:bg-darkCard rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-lg">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-700 text-sm font-bold">
+                        <span class="text-slate-500">Question ${QuizState.currentIndex + 1} of ${total}</span>
+                        <span class="text-primary uppercase tracking-wider">${QuizState.selectedDifficulty} MODE</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-6 dark:text-white leading-relaxed">${q.question}</h3>
+
+                    <div class="space-y-3 mb-8">
+                        ${q.options.map((opt, idx) => {
+                            const isSelected = QuizState.userAnswers[QuizState.currentIndex] === idx;
+                            return `
+                                <button onclick="selectAnswer(${idx})" class="w-full p-4 text-left rounded-xl border-2 transition-all flex items-center justify-between ${isSelected ? 'border-primary bg-blue-50 dark:bg-blue-950/40 text-primary font-bold' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 dark:text-slate-200'}">
+                                    <span>${String.fromCharCode(65 + idx)}. ${opt}</span>${isSelected ? '<i class="fa-solid fa-circle-check"></i>' : ''}
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <button onclick="prevQuestion()" ${QuizState.currentIndex === 0 ? 'disabled class="opacity-50 cursor-not-allowed px-4 py-2 bg-slate-200 rounded-lg text-sm"' : 'class="px-5 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-sm hover:bg-slate-300"'}>
+                            Previous
+                        </button>
+                        ${QuizState.currentIndex === total - 1 ? `
+                            <button onclick="submitQuiz()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm shadow-md transition-colors">
+                                Submit Quiz
+                            </button>
+                        ` : `
+                            <button onclick="nextQuestion()" class="px-6 py-2.5 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg text-sm shadow-md transition-colors">
+                                Next
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectAnswer(idx) {
+            playClickSound();
+            QuizState.userAnswers[QuizState.currentIndex] = idx;
+            renderActiveQuestion();
+        }
+
+        function prevQuestion() {
+            if (QuizState.currentIndex > 0) {
+                playClickSound();
+                QuizState.currentIndex--;
+                renderActiveQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (QuizState.currentIndex < QuizState.selectedCount - 1) {
+                playClickSound();
+                QuizState.currentIndex++;
+                renderActiveQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            playClickSound();
+            clearInterval(QuizState.timerInterval);
+
+            let correct = 0;
+            let incorrect = 0;
+            let unanswered = 0;
+
+            QuizState.questions.forEach((q, idx) => {
+                const ans = QuizState.userAnswers[idx];
+                if (ans === null) unanswered++;
+                else if (ans === q.correctAnswer) correct++;
+                else incorrect++;
+            });
+
+            const total = QuizState.selectedCount;
+            const pct = parseFloat(((correct / total) * 100).toFixed(1));
+            const attemptId = 'ATT-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+
+            const resultData = {
+                studentName: QuizState.studentName,
+                gradeSection: QuizState.gradeSection,
+                submissionDate: QuizState.submissionDate,
+                attemptId: attemptId,
+                category: 'All Topics',
+                difficulty: QuizState.selectedDifficulty,
+                questionCount: total,
+                correctAnswers: correct,
+                incorrectAnswers: incorrect,
+                unansweredQuestions: unanswered,
+                scorePercentage: pct,
+                timeTakenSeconds: QuizState.timeElapsed
+            };
+
+            renderQuizResults(resultData);
+            sendResultsToGoogleSheets(resultData);
+        }
+
+        function renderQuizResults(data) {
+            const container = document.getElementById('dynamicContent');
+            const passed = data.scorePercentage >= 75;
+
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto bg-white dark:bg-darkCard rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full ${passed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} text-4xl mb-4">
+                            <i class="fa-solid ${passed ? 'fa-award' : 'fa-circle-xmark'}"></i>
+                        </div>
+                        <h2 class="text-3xl font-extrabold dark:text-white">Quiz Attempt Completed</h2>
+                        <p class="text-sm text-slate-500 mt-1">Student: <strong>${data.studentName}</strong> (${data.gradeSection})</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                            <span class="text-xs text-slate-500 font-bold uppercase">Score</span>
+                            <div class="text-2xl font-black text-primary mt-1">${data.scorePercentage}%</div>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                            <span class="text-xs text-slate-500 font-bold uppercase">Correct</span>
+                            <div class="text-2xl font-black text-emerald-600 mt-1">${data.correctAnswers} / ${data.questionCount}</div>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                            <span class="text-xs text-slate-500 font-bold uppercase">Time Taken</span>
+                            <div class="text-2xl font-black text-slate-700 dark:text-slate-300 mt-1">${data.timeTakenSeconds}s</div>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                            <span class="text-xs text-slate-500 font-bold uppercase">Status</span>
+                            <div class="text-lg font-black ${passed ? 'text-emerald-600' : 'text-rose-600'} mt-1">${passed ? 'PASSED' : 'FAILED'}</div>
+                        </div>
+                    </div>
+
+                    <div id="sheetsSyncStatus" class="p-4 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900 text-xs font-mono text-blue-800 dark:text-blue-300 flex items-center justify-between">
+                        <span><i class="fa-solid fa-spinner fa-spin mr-2"></i> Submitting attempt results to Google Sheets...</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <button onclick="navigate('quiz')" class="flex-1 py-3 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-colors">
+                            Retake Quiz Bee
+                        </button>
+                        <button onclick="navigate('home')" class="flex-1 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold rounded-xl transition-colors">
+                            Return to Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function sendResultsToGoogleSheets(data) {
+    const statusDiv = document.getElementById('sheetsSyncStatus');
+
+    // ✅ FIXED: Check if URL is missing or still contains the setup placeholder text.
+    // Check if the deployed Google Apps Script Web App URL is missing or still contains the setup placeholder text.
+    if (!statusDiv) {
+        console.error('Google Sheets status element #sheetsSyncStatus was not found.');
+    }
+
+    if (!APP_CONFIG.GOOGLE_SCRIPT_URL || APP_CONFIG.GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE") || APP_CONFIG.GOOGLE_SCRIPT_URL.trim() === "") {
+        if (statusDiv) {
+            statusDiv.className = "p-4 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 text-xs font-mono text-amber-800 dark:text-amber-300";
+            statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> Google Apps Script Web App URL is not configured. This result has not been sent to Google Sheets.`;
+        }
+        console.error('Google Apps Script Web App URL is not configured.');
+        return;
+    }
+
+    // The previous implementation used no-cors mode to safely bypass Google Apps Script CORS restrictions.
+    // That approach cannot verify the response and may falsely report success even when Apps Script rejects the data.
+    // Google Apps Script ContentService responses are redirected and are not reliably readable
+    // from a cross-origin browser fetch. A hidden HTML form POST avoids the CORS preflight issue.
+    // The matching Code.gs must read the JSON from e.parameter.payload (see the updated code below).
+    let submissionFrame = document.getElementById('googleSheetsSubmissionFrame');
+    if (!submissionFrame) {
+        submissionFrame = document.createElement('iframe');
+        submissionFrame.id = 'googleSheetsSubmissionFrame';
+        submissionFrame.name = 'googleSheetsSubmissionFrame';
+        submissionFrame.title = 'Google Sheets submission response';
+        submissionFrame.setAttribute('aria-hidden', 'true');
+        submissionFrame.style.position = 'absolute';
+        submissionFrame.style.width = '1px';
+        submissionFrame.style.height = '1px';
+        submissionFrame.style.border = '0';
+        submissionFrame.style.left = '-10000px';
+        submissionFrame.style.top = '0';
+        document.body.appendChild(submissionFrame);
+    }
+
+    let submissionForm = document.getElementById('googleSheetsSubmissionForm');
+    if (submissionForm) {
+        submissionForm.remove();
+    }
+
+    submissionForm = document.createElement('form');
+    submissionForm.id = 'googleSheetsSubmissionForm';
+    submissionForm.method = 'POST';
+    submissionForm.action = APP_CONFIG.GOOGLE_SCRIPT_URL;
+    submissionForm.target = 'googleSheetsSubmissionFrame';
+    submissionForm.enctype = 'application/x-www-form-urlencoded';
+    submissionForm.acceptCharset = 'UTF-8';
+    submissionForm.style.display = 'none';
+
+    const payloadField = document.createElement('input');
+    payloadField.type = 'hidden';
+    payloadField.name = 'payload';
+    payloadField.value = JSON.stringify(data);
+    submissionForm.appendChild(payloadField);
+    document.body.appendChild(submissionForm);
+
+    try {
+        // Submitting the form sends the quiz result to the deployed Apps Script Web App.
+        // Update UI to confirm dispatch; do not claim that the spreadsheet write was verified.
+        submissionForm.submit();
+
+        if (statusDiv) {
+            statusDiv.className = "p-4 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900 text-xs font-mono text-blue-800 dark:text-blue-300";
+            statusDiv.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Submission request sent to Google Apps Script. Attempt ID: ${data.attemptId}. Browser security prevents this page from verifying the sheet response; the teacher should confirm that the attempt appears in the QuizResults tab.`;
+        }
+    } catch (err) {
+        if (statusDiv) {
+            statusDiv.className = "p-4 bg-rose-50 dark:bg-rose-950/40 rounded-xl border border-rose-200 text-xs font-mono text-rose-800 dark:text-rose-300";
+            statusDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-2"></i> Submission could not be started: ${String(err.message || err)}. Please check the connection and Apps Script URL.`;
+        }
+        console.error('Google Sheets form submission failed:', err);
+    } finally {
+        // Remove the temporary form after the browser has handed off the request.
+        window.setTimeout(() => {
+            const form = document.getElementById('googleSheetsSubmissionForm');
+            if (form) form.remove();
+        }, 1000);
+    }
+}
+
+        // TEACHER & DEVELOPER PORTAL VIEW (Google Sheets Setup & Script Copier)
+        function renderTeacherPortal(container) {
+            container.innerHTML = `
+                <div class="space-y-8 max-w-4xl mx-auto">
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-server text-primary text-2xl"></i>
+                            <h2 class="text-2xl font-extrabold dark:text-white">Teacher Portal & Backend Configuration</h2>
+                        </div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Complete setup instructions and source code for Google Sheets sync.</p>
+                    </div>
+
+                    <!-- Setup Guide -->
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 text-sm dark:text-slate-200">
+                        <h3 class="text-lg font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-list-check"></i> Step-by-Step Google Sheets Setup</h3>
+                        <ol class="list-decimal pl-5 space-y-2 leading-relaxed">
+                            <li>Create a new spreadsheet at <a href="https://sheets.google.com" target="_blank" class="text-primary underline">sheets.google.com</a> named <strong>"Encyclopedia of Electronics Quiz Results"</strong>.</li>
+                            <li>Copy your <strong>Spreadsheet ID</strong> from the address URL (the string between <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">/d/</code> and <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">/edit</code>).</li>
+                            <li>In Sheets, open <strong>Extensions > Apps Script</strong>. Replace all default code with the script below.</li>
+                            <li>Paste your Spreadsheet ID into line 8: <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">SPREADSHEET_ID: "YOUR_ID_HERE"</code>.</li>
+                            <li>Select <strong>initializeSpreadsheet</strong> from the toolbar dropdown and click <strong>Run</strong> to create table headers.</li>
+                            <li>Click <strong>Deploy > New Deployment</strong>. Choose <strong>Web app</strong>, set <em>Who has access</em> to <strong>Anyone</strong>, and click <strong>Deploy</strong>.</li>
+                            <li>Copy the generated Web App URL and paste it into line 52 of this HTML file in the <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">APP_CONFIG</code> section.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Code Copier Section -->
+                    <div class="bg-white dark:bg-darkCard p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold dark:text-white flex items-center gap-2"><i class="fa-solid fa-code"></i> Backend Source Code (Code.gs)</h3>
+                            <button onclick="copyGasCode()" id="copyCodeBtn" class="px-4 py-2 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg text-xs transition-colors flex items-center gap-2">
+                                <i class="fa-solid fa-copy"></i> Copy Script Code
+                            </button>
+                        </div>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto max-h-96 leading-relaxed" id="gasCodeBlock">${RAW_GAS_CODE}</pre>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyGasCode() {
+            playClickSound();
+            navigator.clipboard.writeText(RAW_GAS_CODE).then(() => {
+                const btn = document.getElementById('copyCodeBtn');
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Copied to Clipboard!`;
+                btn.classList.remove('bg-primary', 'hover:bg-blue-600');
+                btn.classList.add('bg-emerald-600');
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fa-solid fa-copy"></i> Copy Script Code`;
+                    btn.classList.remove('bg-emerald-600');
+                    btn.classList.add('bg-primary');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

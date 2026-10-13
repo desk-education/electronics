@@ -1,0 +1,21 @@
+body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; min-width: 220px; z-index: 50; }
+        .dropdown.open .dropdown-content { display: block; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; }
+        .accordion-content.open { max-height: 2000px; padding-top: 1rem; padding-bottom: 1rem; }
+        .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+        .main-content-wrapper { display: flex; flex: 1; }
+        .sidebar-container { width: 280px; flex-shrink: 0; border-right: 1px solid #e2e8f0; }
+        .dark .sidebar-container { border-right-color: #334155; }
+        .content-container { flex-grow: 1; padding: 2rem; max-width: calc(100% - 280px); }
+        @media (max-width: 768px) {
+            .main-content-wrapper { flex-direction: column; }
+            .sidebar-container { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .dark .sidebar-container { border-bottom-color: #334155; }
+            .content-container { max-width: 100%; padding: 1rem; }
+        }
